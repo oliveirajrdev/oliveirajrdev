@@ -8,11 +8,11 @@ Front-end Developer Contagem-MG, Brazil.
   <a href="https://www.linkedin.com/in/oliveirajrdev/">
     <img src="https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white" />
   </a>&nbsp;&nbsp;
-  <a href="https://www.instagram.com/junioroliveirav8/">
-    <img src="https://img.shields.io/badge/instagram-%23E4405F.svg?&style=for-the-badge&logo=instagram&logoColor=white" />        
-  </a>&nbsp;&nbsp;
   <a href="mailto:oliveirajrdev@gmail.com"> 
     <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" target="_blank"></a>
+  </a>&nbsp;&nbsp;
+  <a href="https://www.instagram.com/junioroliveirav8/">
+    <img src="https://img.shields.io/badge/instagram-%23E4405F.svg?&style=for-the-badge&logo=instagram&logoColor=white" />        
   </a>&nbsp;&nbsp;
     
 ![Junior GitHub stats](https://github-readme-stats.vercel.app/api?username=oliveirajrdev&show_icons=true&theme=dark&count_private=true)
