@@ -84,6 +84,7 @@
     background:var(--card); border-top:1px solid var(--line);
     padding:8px 8px calc(12px + env(safe-area-inset-bottom));
   }
+  .tabbar.three{grid-template-columns:repeat(3,1fr)}
   .tabbar button{
     border:0; background:none; font:inherit; cursor:pointer; color:var(--sub);
     display:flex; flex-direction:column; align-items:center; gap:2px;
@@ -270,19 +271,8 @@
             <div class="num" style="font-size:.72rem; margin-top:6px; font-weight:700" id="k-goal-note"></div>
           </div>
 
-          <h2 class="sec">Trilha de hoje</h2>
+          <h2 class="sec">Tarefas de hoje</h2>
           <div class="card"><div id="k-trail"></div></div>
-
-          <h2 class="sec">Novidades</h2>
-          <div class="card stack" id="k-feed" style="font-size:.8rem"></div>
-        </section>
-
-        <!-- MISSOES -->
-        <section class="scr" id="k-missoes">
-          <h2 class="sec">Missões da semana</h2>
-          <div class="card"><div id="k-week"></div></div>
-          <h2 class="sec">💼 Mural de bicos — pegue antes da Ana!</h2>
-          <div class="stack" id="k-bicos"></div>
         </section>
 
         <!-- COFRE -->
@@ -343,7 +333,7 @@
             <div class="m off">🏆<span>100 missões</span></div>
             <div class="m off">🔥<span>30 dias</span></div>
             <div class="m off">💰<span>Poupador</span></div>
-            <div class="m off">⚡<span>10 bicos</span></div>
+            <div class="m off">⚡<span>10 relâmpagos</span></div>
           </div>
           <h2 class="sec">Estante de conquistas</h2>
           <div class="card row">
@@ -356,14 +346,10 @@
         </section>
       </div>
 
-      <nav class="tabbar" aria-label="Navegação da criança">
-        <button class="on" data-k="k-hoje" onclick="kidTab(this)"><span class="ti">🏠</span>Hoje</button>
-        <button data-k="k-missoes" onclick="kidTab(this)"><span class="ti">🗺️</span>Missões</button>
-        <div style="position:relative; text-align:center">
-          <button class="cta" aria-label="Entregar missão" onclick="openSheet('sh-deliver')">✓<small>Entregar</small></button>
-        </div>
-        <button data-k="k-cofre" onclick="kidTab(this)"><span class="ti">🏦</span>Cofre</button>
-        <button data-k="k-eu" onclick="kidTab(this)"><span class="ti">🦖</span>Eu</button>
+      <nav class="tabbar three" aria-label="Navegação da criança">
+        <button class="on" data-k="k-hoje" onclick="kidTab(this)"><span class="ti">📋</span>Tarefas</button>
+        <button data-k="k-cofre" onclick="kidTab(this)"><span class="ti">🎯</span>Metas</button>
+        <button data-k="k-eu" onclick="kidTab(this)"><span class="ti">🏆</span>Conquistas</button>
       </nav>
     </div>
 
@@ -480,14 +466,6 @@
     </div>
 
     <!-- ================= SHEETS ================= -->
-    <div class="sheet-veil" id="sh-deliver" onclick="if(event.target===this)closeSheets()">
-      <div class="sheet">
-        <div class="grab"></div>
-        <h3>Entregar missão</h3>
-        <div class="stack" id="deliver-list"></div>
-      </div>
-    </div>
-
     <div class="sheet-veil" id="sh-create" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
@@ -497,7 +475,6 @@
           <button class="btn soft tpl" onclick="criar('🐕 Passear com o Thor',8)">🐕 Passear com o Thor · <b>8 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 10+)</span></button>
           <button class="btn soft tpl" onclick="criar('🍽️ Lavar a louça do jantar',10)">🍽️ Lavar a louça do jantar · <b>10 ⭐</b></button>
           <button class="btn ghost tpl" onclick="criar('🎤 Regar as plantas',6)">🎤 Ditar por voz: “Léo, regar as plantas, 6 estrelas” → o app monta a missão</button>
-          <label class="row" style="font-size:.78rem; color:var(--sub)"><input type="checkbox" checked> Publicar também no mural de bicos (qualquer filho pode pegar)</label>
         </div>
       </div>
     </div>
@@ -543,10 +520,6 @@ const state = {
     { id: 3, name: 'Tirar o lixo', icon: '🗑️', period: 'Noite', stars: 5, st: 'todo', foto: true },
     { id: 4, name: 'Ração do Thor', icon: '🐕', period: 'Noite', stars: 4, st: 'delivered' },
   ],
-  bicos: [
-    { id: 90, name: 'Lavar o carro do papai', icon: '🚗', stars: 20 },
-    { id: 91, name: 'Organizar a despensa', icon: '🥫', stars: 15 },
-  ],
   resgates: [{ id: 70, name: '30 min extras de videogame', icon: '🎮', cost: 15, st: 'pending' }],
   loja: [
     { name: '30 min extras de videogame', icon: '🎮', cost: 15 },
@@ -559,7 +532,6 @@ const state = {
     { d: 'Resgate: sorvete no parque', v: -12, t: 'sáb' },
     { d: 'Guardou na meta Skate', v: -20, t: 'sex', neutral: true },
   ],
-  feed: ['⭐⭐⭐ Papai aprovou "Arrumar a cama" — caprichou! +6 ⭐', '⚡ Nova missão relâmpago pode aparecer a qualquer momento…'],
   voucher: null,
   nextId: 100,
 };
@@ -571,7 +543,7 @@ function toast(app, msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
-function openSheet(id){ $(id).classList.add('on'); if(id==='sh-deliver') renderDeliver(); }
+function openSheet(id){ $(id).classList.add('on'); }
 function closeSheets(){ document.querySelectorAll('.sheet-veil').forEach(s => s.classList.remove('on')); }
 function pushLedger(d, v, neutral){ state.ledger.unshift({ d, v, t: 'agora', neutral }); }
 
@@ -596,8 +568,8 @@ const parTab = b => switchTab(b, 'p-');
 /* ---------------- kid actions ---------------- */
 function deliver(id){
   const m = state.missions.find(x => x.id === id);
-  m.st = 'delivered'; closeSheets();
-  toast('kid', '🚀 Missão entregue! Aguardando o papai avaliar…');
+  m.st = 'delivered';
+  toast('kid', '🚀 Tarefa entregue! Aguardando o papai avaliar…');
   render();
 }
 function guardar(n){
@@ -615,14 +587,6 @@ function resgatar(item){
   toast('kid', '📨 Pedido enviado! O papai precisa aprovar.');
   render();
 }
-function pegarBico(id){
-  const i = state.bicos.findIndex(b => b.id === id);
-  const b = state.bicos.splice(i, 1)[0];
-  state.missions.push({ id: b.id, name: b.name + ' (bico)', icon: b.icon, period: 'Extra', stars: b.stars, st: 'todo' });
-  state.feed.unshift('💼 Você pegou o bico "' + b.name + '" antes da Ana!');
-  toast('kid', '💼 Bico é seu! Corre antes que expire.');
-  render();
-}
 
 /* ---------------- parent actions ---------------- */
 function approve(id, nota){
@@ -633,14 +597,12 @@ function approve(id, nota){
   state.stars += ganho;
   const rot = nota === 1 ? '⭐ feito nas coxas (50%)' : nota === 2 ? '⭐⭐ bem feito' : '⭐⭐⭐ caprichou! (+20%)';
   pushLedger(m.name + ' · ' + rot, +ganho);
-  state.feed.unshift('✅ Papai aprovou "' + m.name + '" ' + '⭐'.repeat(nota) + ' +' + ganho + ' ⭐');
   toast('parent', 'Aprovada com ' + '⭐'.repeat(nota) + ' → +' + ganho + ' ⭐ para o Léo');
   render();
 }
 function devolver(id){
   const m = state.missions.find(x => x.id === id);
   m.st = 'todo'; m.redo = true;
-  state.feed.unshift('↩️ "' + m.name + '" voltou: "faltou caprichar, tenta de novo até 20h" — sem desconto na 2ª entrega');
   toast('parent', 'Devolvida com motivo e novo prazo. Sem redução na 2ª tentativa.');
   render();
 }
@@ -655,13 +617,11 @@ function approveResgate(id){
 function cartao(tipo, motivo, valor){
   closeSheets();
   if (tipo === 'amarelo') {
-    state.feed.unshift('🟨 Cartão amarelo: "' + motivo + '". Sem custo — 3 amarelos viram vermelho.');
     toast('parent', '🟨 Advertência registrada. Léo foi notificado.');
   } else {
     const desc = Math.min(valor, state.stars);
     state.stars -= desc;
     pushLedger('🟥 Cartão vermelho: ' + motivo, -desc);
-    state.feed.unshift('🟥 Cartão vermelho (−' + desc + ' ⭐): "' + motivo + '". Você pode contestar 1 vez.');
     toast('parent', '🟥 −' + desc + ' ⭐. As estrelas da meta ficaram intocadas.');
   }
   render();
@@ -669,7 +629,6 @@ function cartao(tipo, motivo, valor){
 function bonus(){
   state.stars += 5;
   pushLedger('🎁 Bônus surpresa da mamãe', +5);
-  state.feed.unshift('🎁 Bônus surpresa! +5 ⭐ da mamãe, só porque você ajudou sem pedir.');
   toast('parent', '🎁 +5 ⭐ enviadas com uma mensagem para o Léo');
   render();
 }
@@ -677,15 +636,13 @@ function criar(nome, stars){
   closeSheets();
   const icon = nome.split(' ')[0];
   state.missions.push({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Tarde', stars, st: 'todo' });
-  state.feed.unshift('🆕 Nova missão: "' + nome.slice(icon.length + 1) + '" (' + stars + ' ⭐)');
-  toast('parent', 'Missão publicada no app do Léo em ' + (Math.floor(Math.random() * 9) + 8) + ' segundos ✓');
+  toast('parent', 'Tarefa publicada no app do Léo em ' + (Math.floor(Math.random() * 9) + 8) + ' segundos ✓');
   render();
 }
 function flash(nome, stars){
   closeSheets();
   const icon = nome.split(' ')[0];
   state.missions.unshift({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Agora', stars, st: 'todo', flash: true });
-  state.feed.unshift('⚡ MISSÃO RELÂMPAGO: "' + nome.slice(icon.length + 1) + '" vale 2× por tempo limitado!');
   toast('parent', '⚡ Relâmpago publicada — vale 2× na próxima 1 h');
   render();
 }
@@ -714,25 +671,18 @@ function render(){
   $('k-goal-note').textContent = left > 0 ? 'Faltam ' + left + ' ⭐ · no seu ritmo, ~' + Math.ceil(left / 12) + ' dias 💪' : 'META ATINGIDA! 🎉 Mostre para o papai!';
   $('k-goal2').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ guardadas';
 
-  /* kid trail */
-  $('k-trail').innerHTML = state.missions.map(m =>
-    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
-    '</div><div class="meta">' + m.period + (m.foto ? ' · 📷 exige foto' : '') + '</div></div>' + missionChip(m) + '</div>'
-  ).join('');
-
-  /* kid week + bicos */
-  $('k-week').innerHTML = state.missions.map(m =>
-    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
-    '</div><div class="meta">' + (m.period === 'Extra' ? 'Bico avulso' : 'Recorrente · ' + m.period) + '</div></div><span class="chip star num">+' + m.stars + ' ⭐</span></div>'
-  ).join('');
-  $('k-bicos').innerHTML = state.bicos.length ? state.bicos.map(b =>
-    '<div class="card row"><div class="dot">' + b.icon + '</div><div class="grow"><div style="font-weight:800;font-size:.85rem">' + b.name +
-    '</div><div style="font-size:.72rem;color:var(--sub)">Avulsa · primeiro que pegar, leva</div></div>' +
-    '<button class="btn primary" onclick="pegarBico(' + b.id + ')">Pegar +' + b.stars + ' ⭐</button></div>'
-  ).join('') : '<div class="empty">Nenhum bico no mural agora. Volte mais tarde! 👀</div>';
-
-  /* kid feed */
-  $('k-feed').innerHTML = state.feed.slice(0, 4).map(f => '<div>' + f + '</div>').join('');
+  /* kid trail — cada tarefa "a fazer" tem seu botão Entregar à direita */
+  $('k-trail').innerHTML = state.missions.map(m => {
+    const right = m.st === 'todo'
+      ? '<button class="btn primary" style="padding:8px 12px; font-size:.74rem" onclick="deliver(' + m.id + ')">✓ Entregar</button>'
+      : missionChip(m);
+    const meta = m.period + ' · +' + m.stars + ' ⭐'
+      + (m.flash ? ' · ⚡ vale 2× por 1 h' : '')
+      + (m.foto ? ' · 📷 exige foto' : '')
+      + (m.redo && m.st === 'todo' ? ' · ↩️ refazer até 20h' : '');
+    return '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
+      '</div><div class="meta">' + meta + '</div></div>' + right + '</div>';
+  }).join('');
 
   /* kid loja + voucher + ledger */
   $('k-loja').innerHTML = state.loja.map((l, i) =>
@@ -787,14 +737,6 @@ function render(){
   $('p-next-pay').textContent = R$(state.stars * TAXA);
   $('p-goal').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ · você precificou em R$ 160';
   $('p-goal-bar').style.width = pct + '%';
-}
-
-function renderDeliver(){
-  const todo = state.missions.filter(m => m.st === 'todo');
-  $('deliver-list').innerHTML = todo.length ? todo.map(m =>
-    '<button class="btn soft tpl" onclick="deliver(' + m.id + ')">' + m.icon + ' ' + m.name +
-    (m.foto ? ' · 📷 tire a foto' : '') + ' → <b>enviar</b></button>'
-  ).join('') : '<div class="empty">Tudo entregue por hoje! 🔥 Sua sequência está garantida.</div>';
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
