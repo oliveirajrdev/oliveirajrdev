@@ -1,0 +1,802 @@
+<title>Missão Mesada</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ---------- chrome (page around the phone) ---------- */
+  :root{
+    --pg-bg:#e9edf2; --pg-ink:#2a3240; --pg-sub:#67707e; --pg-card:#ffffff;
+    --pg-line:#d5dbe3; --pg-accent:#6C4DF6;
+  }
+  :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --pg-bg:#171b22; --pg-ink:#e8ebf0; --pg-sub:#9aa3b0; --pg-card:#222835;
+      --pg-line:#333b49; --pg-accent:#9b85ff;
+    }
+  }
+  :root[data-theme="dark"]{
+    --pg-bg:#171b22; --pg-ink:#e8ebf0; --pg-sub:#9aa3b0; --pg-card:#222835;
+    --pg-line:#333b49; --pg-accent:#9b85ff;
+  }
+
+  *{box-sizing:border-box; margin:0}
+  html,body{height:100%}
+  body{
+    background:var(--pg-bg); color:var(--pg-ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    padding:26px 16px 40px;
+  }
+  .pg-head{text-align:center; max-width:420px}
+  .pg-head h1{font-size:1.25rem; font-weight:800; letter-spacing:-.01em}
+  .pg-head p{color:var(--pg-sub); font-size:.83rem; margin-top:4px; line-height:1.45}
+
+  .switch{
+    display:flex; background:var(--pg-card); border:1px solid var(--pg-line);
+    border-radius:999px; padding:4px; gap:4px;
+  }
+  .switch button{
+    border:0; background:transparent; color:var(--pg-sub); font:inherit;
+    font-weight:700; font-size:.85rem; padding:7px 20px; border-radius:999px; cursor:pointer;
+  }
+  .switch button:focus-visible{outline:2px solid var(--pg-accent); outline-offset:2px}
+  .switch button.on{background:var(--pg-accent); color:#fff}
+
+  /* ---------- phone frame ---------- */
+  .phone{
+    width:min(392px,100%); height:min(792px,calc(100dvh - 150px)); min-height:560px;
+    background:#0d0d12; border-radius:44px; padding:10px;
+    box-shadow:0 24px 60px rgba(10,12,30,.35);
+    position:relative; flex:none;
+  }
+  .screen-wrap{
+    position:relative; width:100%; height:100%;
+    border-radius:35px; overflow:hidden; display:flex; flex-direction:column;
+  }
+  .notch{
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:104px; height:22px; border-radius:999px; background:#0d0d12; z-index:60;
+  }
+
+  /* two in-app palettes (fixed, like real app screens) */
+  .screen-wrap[data-app="kid"]{
+    --bg:#FFF8EF; --card:#ffffff; --ink:#262040; --sub:#7a7392;
+    --brand:#6C4DF6; --brand-soft:#EFEAFE; --star:#FFAD1F; --star-soft:#FFF2D6;
+    --flame:#FF6B35; --ok:#2FB86B; --ok-soft:#E2F6EB; --warn:#DE9A1F; --line:#EFE6D8;
+    font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  .screen-wrap[data-app="parent"]{
+    --bg:#F3F6F5; --card:#ffffff; --ink:#182B27; --sub:#5F7370;
+    --brand:#0E6B5C; --brand-soft:#E1EFEC; --star:#DE9A1F; --star-soft:#FBF1DC;
+    --flame:#FF6B35; --ok:#2F965F; --ok-soft:#E2F3E9; --warn:#DE9A1F; --line:#E2E9E7;
+    --danger:#CF4A4A; --danger-soft:#FBE7E7;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  .screen-wrap{background:var(--bg); color:var(--ink)}
+
+  /* ---------- app layout ---------- */
+  .app-head{padding:40px 18px 12px; flex:none}
+  .app-body{flex:1; overflow-y:auto; padding:4px 16px 96px; scrollbar-width:none}
+  .app-body::-webkit-scrollbar{display:none}
+
+  .tabbar{
+    position:absolute; bottom:0; left:0; right:0; z-index:50;
+    display:grid; grid-template-columns:1fr 1fr 74px 1fr 1fr; align-items:end;
+    background:var(--card); border-top:1px solid var(--line);
+    padding:8px 8px calc(12px + env(safe-area-inset-bottom));
+  }
+  .tabbar button{
+    border:0; background:none; font:inherit; cursor:pointer; color:var(--sub);
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    font-size:.62rem; font-weight:700; padding:4px 0;
+  }
+  .tabbar button:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:8px}
+  .tabbar button .ti{font-size:1.25rem; line-height:1; filter:grayscale(1); opacity:.55}
+  .tabbar button.on{color:var(--brand)}
+  .tabbar button.on .ti{filter:none; opacity:1}
+  .cta{
+    width:60px; height:60px; border-radius:50%; border:0; cursor:pointer;
+    background:var(--brand); color:#fff; font-size:1.5rem;
+    margin:0 auto -6px; box-shadow:0 8px 18px rgba(0,0,0,.22);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .cta small{position:absolute; bottom:-16px; font-size:.58rem; font-weight:700; color:var(--sub)}
+
+  .scr{display:none; animation:fade .18s ease}
+  .scr.on{display:block}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)} to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){
+    .scr{animation:none} .toast{transition:none}
+  }
+
+  /* ---------- shared components ---------- */
+  h2.sec{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--sub); margin:18px 2px 8px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px}
+  .stack{display:flex; flex-direction:column; gap:10px}
+  .row{display:flex; align-items:center; gap:10px}
+  .grow{flex:1; min-width:0}
+  .num{font-variant-numeric:tabular-nums}
+  .chip{
+    display:inline-flex; align-items:center; gap:5px; border-radius:999px;
+    padding:4px 10px; font-size:.72rem; font-weight:800;
+  }
+  .chip.star{background:var(--star-soft); color:#8a6100}
+  .chip.flame{background:#FFE8DE; color:#b4441c}
+  .chip.ok{background:var(--ok-soft); color:var(--ok)}
+  .chip.wait{background:#FDF3DC; color:#96700f}
+  .chip.flash{background:#FFE8DE; color:#b4441c}
+  .btn{
+    border:0; border-radius:12px; padding:10px 14px; font:inherit; font-weight:800;
+    cursor:pointer; font-size:.82rem;
+  }
+  .btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .btn.primary{background:var(--brand); color:#fff}
+  .btn.soft{background:var(--brand-soft); color:var(--brand)}
+  .btn.ghost{background:transparent; color:var(--sub); border:1px solid var(--line)}
+  .btn.danger{background:var(--danger-soft,#FBE7E7); color:var(--danger,#CF4A4A)}
+  .btn:disabled{opacity:.4; cursor:default}
+  .bar{height:8px; border-radius:999px; background:var(--line); overflow:hidden}
+  .bar i{display:block; height:100%; border-radius:999px; background:var(--brand)}
+  .avatar{
+    width:40px; height:40px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:1.25rem;
+    background:var(--brand-soft);
+  }
+
+  /* mission rows */
+  .mrow{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .name{font-weight:800; font-size:.86rem}
+  .mrow .meta{font-size:.72rem; color:var(--sub); margin-top:1px}
+  .dot{
+    width:34px; height:34px; border-radius:12px; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+    background:var(--brand-soft);
+  }
+
+  /* toast + sheet */
+  .toast{
+    position:absolute; left:50%; bottom:104px; transform:translate(-50%,16px);
+    background:#262040; color:#fff; font-size:.78rem; font-weight:700;
+    padding:9px 16px; border-radius:999px; opacity:0; pointer-events:none;
+    transition:.25s ease; z-index:70; white-space:nowrap; max-width:90%;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+  .toast.show{opacity:1; transform:translate(-50%,0)}
+  .sheet-veil{
+    position:absolute; inset:0; background:rgba(20,16,40,.45); z-index:80;
+    display:none; align-items:flex-end;
+  }
+  .sheet-veil.on{display:flex}
+  .sheet{
+    background:var(--card); width:100%; border-radius:24px 24px 0 0;
+    padding:18px 18px 26px; max-height:78%; overflow-y:auto;
+  }
+  .sheet h3{font-size:1rem; font-weight:800; margin-bottom:12px}
+  .grab{width:40px; height:4px; border-radius:99px; background:var(--line); margin:0 auto 12px}
+
+  /* kid specifics */
+  .kid-hero{
+    background:linear-gradient(135deg,#6C4DF6,#8f6ffb); color:#fff;
+    border-radius:20px; padding:14px 16px;
+  }
+  .kid-hero .big{font-size:1.7rem; font-weight:800; letter-spacing:-.02em}
+  .lvlbar{height:6px; border-radius:99px; background:rgba(255,255,255,.28); margin-top:10px}
+  .lvlbar i{display:block; height:100%; border-radius:99px; background:#FFD262}
+  .goalcard{background:linear-gradient(135deg,#FFAD1F,#ff8f3d); color:#4a2c00; border:0}
+  .goalcard .bar{background:rgba(255,255,255,.5)}
+  .goalcard .bar i{background:#fff}
+  .stars-btns{display:flex; gap:8px}
+  .stars-btns .btn{flex:1; padding:9px 4px; font-size:.78rem}
+
+  /* parent specifics */
+  .pulse{display:flex; gap:10px}
+  .pulse .p{
+    flex:1; background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:12px; text-align:center;
+  }
+  .pulse .p b{display:block; font-size:.85rem; margin-top:6px}
+  .pulse .p span{font-size:.7rem; color:var(--sub)}
+  .quick{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+  .quick .btn{display:flex; flex-direction:column; gap:4px; align-items:center; padding:12px 6px; font-size:.72rem}
+  .quick .btn em{font-style:normal; font-size:1.2rem}
+  .approve-card .photo{
+    height:104px; border-radius:12px; background:var(--brand-soft);
+    display:flex; align-items:center; justify-content:center; font-size:2rem; margin:10px 0;
+    color:var(--brand);
+  }
+  .ledger li{display:flex; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:.8rem}
+  .ledger li:last-child{border-bottom:0}
+  .ledger .neg{color:#CF4A4A; font-weight:800}
+  .ledger .pos{color:var(--ok); font-weight:800}
+  .ledger small{color:var(--sub); display:block; font-weight:400}
+  ul{list-style:none}
+  .tpl{width:100%; text-align:left}
+  .empty{
+    border:1.5px dashed var(--line); border-radius:16px; padding:18px;
+    text-align:center; color:var(--sub); font-size:.8rem;
+  }
+  .voucher{
+    border:1.5px dashed var(--ok); background:var(--ok-soft); border-radius:16px; padding:12px 14px;
+  }
+  .medals{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+  .medals .m{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:10px 4px; text-align:center; font-size:1.3rem;
+  }
+  .medals .m span{display:block; font-size:.58rem; font-weight:700; color:var(--sub); margin-top:4px}
+  .medals .m.off{opacity:.35; filter:grayscale(1)}
+</style>
+
+<div class="pg-head">
+  <h1>Missão Mesada — protótipo navegável</h1>
+  <p>Alterne entre as duas pontas. Aprove uma entrega no painel dos pais e veja as estrelas caírem no app da criança.</p>
+</div>
+
+<div class="switch" role="tablist" aria-label="Escolher app">
+  <button id="sw-kid" class="on" onclick="setApp('kid')">🧒 Criança (Léo)</button>
+  <button id="sw-parent" onclick="setApp('parent')">👨‍👩‍👧 Pais</button>
+</div>
+
+<div class="phone">
+  <div class="screen-wrap" id="wrap" data-app="kid">
+    <div class="notch"></div>
+
+    <!-- ================= KID APP ================= -->
+    <div id="app-kid" class="app" style="display:contents">
+      <div class="app-head">
+        <div class="row">
+          <div class="avatar">🦖</div>
+          <div class="grow">
+            <div style="font-weight:800; font-size:.95rem">Oi, Léo!</div>
+            <div style="font-size:.7rem; color:var(--sub)">Nível 7 · Caçador de Missões</div>
+          </div>
+          <span class="chip star num">⭐ <b id="k-stars">0</b></span>
+          <span class="chip flame num">🔥 <b id="k-streak">6</b></span>
+        </div>
+      </div>
+
+      <div class="app-body">
+        <!-- HOJE -->
+        <section class="scr on" id="k-hoje">
+          <div class="card goalcard">
+            <div class="row">
+              <div class="grow">
+                <div style="font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em">Minha meta</div>
+                <div style="font-weight:800; font-size:1.05rem">🛹 Skate novo</div>
+              </div>
+              <div class="num" style="font-weight:800" id="k-goal-left"></div>
+            </div>
+            <div class="bar" style="margin-top:10px"><i id="k-goal-bar"></i></div>
+            <div class="num" style="font-size:.72rem; margin-top:6px; font-weight:700" id="k-goal-note"></div>
+          </div>
+
+          <h2 class="sec">Trilha de hoje</h2>
+          <div class="card"><div id="k-trail"></div></div>
+
+          <h2 class="sec">Novidades</h2>
+          <div class="card stack" id="k-feed" style="font-size:.8rem"></div>
+        </section>
+
+        <!-- MISSOES -->
+        <section class="scr" id="k-missoes">
+          <h2 class="sec">Missões da semana</h2>
+          <div class="card"><div id="k-week"></div></div>
+          <h2 class="sec">💼 Mural de bicos — pegue antes da Ana!</h2>
+          <div class="stack" id="k-bicos"></div>
+        </section>
+
+        <!-- COFRE -->
+        <section class="scr" id="k-cofre">
+          <div class="kid-hero">
+            <div style="font-size:.72rem; font-weight:700; opacity:.85">Meu cofre</div>
+            <div class="big num">⭐ <span id="k-total"></span></div>
+            <div class="row num" style="font-size:.75rem; margin-top:6px; gap:14px">
+              <span>Livre: <b id="k-livre"></b></span>
+              <span>Guardado na meta: <b id="k-res"></b></span>
+            </div>
+            <div class="lvlbar"><i id="k-cofre-bar" style="width:40%"></i></div>
+            <div class="num" style="font-size:.7rem; margin-top:6px; opacity:.9" id="k-real"></div>
+          </div>
+
+          <h2 class="sec">Metas</h2>
+          <div class="card">
+            <div class="row">
+              <div class="dot">🛹</div>
+              <div class="grow">
+                <div style="font-weight:800; font-size:.88rem">Skate novo</div>
+                <div class="num" style="font-size:.72rem; color:var(--sub)" id="k-goal2"></div>
+              </div>
+            </div>
+            <div class="bar" style="margin:10px 0"><i id="k-goal-bar2"></i></div>
+            <div class="row">
+              <button class="btn soft grow" onclick="guardar(10)">Guardar 10 ⭐</button>
+              <button class="btn ghost" onclick="toast('kid','Papai coloca 1 ⭐ a cada 2 que você guarda 🤝')">2:1 dos pais</button>
+            </div>
+          </div>
+
+          <div id="k-voucher-slot" class="stack" style="margin-top:10px"></div>
+
+          <h2 class="sec">Loja da família</h2>
+          <div class="stack" id="k-loja"></div>
+
+          <h2 class="sec">Extrato</h2>
+          <div class="card"><ul class="ledger" id="k-ledger"></ul></div>
+
+          <button class="btn ghost" style="width:100%; margin-top:12px" onclick="toast('kid','Pedido de saque enviado ao papai 💸')">💸 Sacar em dinheiro</button>
+        </section>
+
+        <!-- EU -->
+        <section class="scr" id="k-eu">
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem">🦖</div>
+            <div style="font-weight:800; font-size:1.05rem; margin-top:4px">Léo, o Caçador de Missões</div>
+            <div style="font-size:.75rem; color:var(--sub)">Nível 7 · 620 XP — o XP nunca diminui!</div>
+            <div class="bar" style="margin-top:10px"><i style="width:62%"></i></div>
+            <div style="font-size:.7rem; color:var(--sub); margin-top:6px">Faltam 180 XP para a patente <b>Herói da Casa</b></div>
+          </div>
+          <h2 class="sec">Medalhas</h2>
+          <div class="medals">
+            <div class="m">🥇<span>1ª missão</span></div>
+            <div class="m">🔥<span>7 dias</span></div>
+            <div class="m">🎯<span>1ª meta</span></div>
+            <div class="m">🎓<span>Hábito: cama</span></div>
+            <div class="m off">🏆<span>100 missões</span></div>
+            <div class="m off">🔥<span>30 dias</span></div>
+            <div class="m off">💰<span>Poupador</span></div>
+            <div class="m off">⚡<span>10 bicos</span></div>
+          </div>
+          <h2 class="sec">Estante de conquistas</h2>
+          <div class="card row">
+            <div class="dot">🎮</div>
+            <div class="grow">
+              <div style="font-weight:800; font-size:.85rem">Jogo do Dino</div>
+              <div style="font-size:.72rem; color:var(--sub)">Meta atingida em 12/06 · 250 ⭐ poupadas</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <nav class="tabbar" aria-label="Navegação da criança">
+        <button class="on" data-k="k-hoje" onclick="kidTab(this)"><span class="ti">🏠</span>Hoje</button>
+        <button data-k="k-missoes" onclick="kidTab(this)"><span class="ti">🗺️</span>Missões</button>
+        <div style="position:relative; text-align:center">
+          <button class="cta" aria-label="Entregar missão" onclick="openSheet('sh-deliver')">✓<small>Entregar</small></button>
+        </div>
+        <button data-k="k-cofre" onclick="kidTab(this)"><span class="ti">🏦</span>Cofre</button>
+        <button data-k="k-eu" onclick="kidTab(this)"><span class="ti">🦖</span>Eu</button>
+      </nav>
+    </div>
+
+    <!-- ================= PARENT APP ================= -->
+    <div id="app-parent" class="app" style="display:none">
+      <div class="app-head">
+        <div class="row">
+          <div class="grow">
+            <div style="font-weight:800; font-size:1.05rem">Bom dia, Carla 👋</div>
+            <div style="font-size:.72rem; color:var(--sub)" id="p-sub">Seu resumo leva 60 segundos</div>
+          </div>
+          <div class="avatar" style="background:var(--brand-soft)">👩</div>
+        </div>
+      </div>
+
+      <div class="app-body">
+        <!-- PAINEL -->
+        <section class="scr on" id="p-painel">
+          <h2 class="sec">Fila de aprovações</h2>
+          <div class="stack" id="p-fila"></div>
+
+          <h2 class="sec">Resgates pendentes</h2>
+          <div class="stack" id="p-resgates"></div>
+
+          <h2 class="sec">Pulso do dia</h2>
+          <div class="pulse">
+            <div class="p"><div style="font-size:1.4rem">🦄</div><b>Ana</b><span class="num">3/4 missões · 🔥12</span></div>
+            <div class="p"><div style="font-size:1.4rem">🦖</div><b>Léo</b><span class="num" id="p-leo-pulse"></span></div>
+          </div>
+
+          <h2 class="sec">Ações rápidas</h2>
+          <div class="quick">
+            <button class="btn soft" onclick="openSheet('sh-flash')"><em>⚡</em>Relâmpago</button>
+            <button class="btn danger" onclick="openSheet('sh-card')"><em>🟨🟥</em>Cartão</button>
+            <button class="btn soft" onclick="bonus()"><em>🎁</em>Bônus</button>
+          </div>
+        </section>
+
+        <!-- MISSOES (pais) -->
+        <section class="scr" id="p-missoes">
+          <h2 class="sec">Semana do Léo</h2>
+          <div class="card">
+            <div id="p-week"></div>
+          </div>
+          <h2 class="sec">Modelos da família</h2>
+          <div class="card stack" style="font-size:.82rem">
+            <div class="row"><div class="dot">🛏️</div><div class="grow"><b>Arrumar a cama</b><div style="font-size:.72rem;color:var(--sub)">Diária · 5 ⭐ · 🎓 sugerido aposentar (28 dias seguidos!)</div></div><button class="btn ghost" onclick="toast('parent','Missão graduada! Léo ganhou a medalha 🎓')">🎓</button></div>
+            <div class="row"><div class="dot">🗑️</div><div class="grow"><b>Tirar o lixo</b><div style="font-size:.72rem;color:var(--sub)">Seg–Sex, 19h · 5 ⭐ · exige foto</div></div></div>
+            <div class="row"><div class="dot">📚</div><div class="grow"><b>Lição de casa</b><div style="font-size:.72rem;color:var(--sub)">Diária · 10 ⭐</div></div></div>
+          </div>
+        </section>
+
+        <!-- FINANCEIRO -->
+        <section class="scr" id="p-financeiro">
+          <div class="card" style="background:var(--brand); color:#fff; border:0">
+            <div style="font-size:.72rem; opacity:.85; font-weight:700">Carteira do Léo</div>
+            <div class="num" style="font-size:1.6rem; font-weight:800">⭐ <span id="p-total"></span> <span style="font-size:.85rem; font-weight:700; opacity:.85" id="p-total-real"></span></div>
+            <div class="row num" style="font-size:.74rem; margin-top:4px; opacity:.9; gap:14px">
+              <span>Livre: <b id="p-livre"></b></span><span>Em metas: <b id="p-res"></b></span>
+            </div>
+          </div>
+
+          <h2 class="sec">Regras da economia</h2>
+          <div class="card stack" style="font-size:.82rem">
+            <div class="row"><div class="grow"><b>Taxa de conversão</b><div style="font-size:.72rem;color:var(--sub)">1 ⭐ = R$ 0,50 · por filho</div></div><button class="btn ghost" onclick="toast('parent','Simulador: nesse ritmo, Léo ganha ~R$ 46/mês')">Simular</button></div>
+            <div class="row"><div class="grow"><b>Dia da mesada</b><div style="font-size:.72rem;color:var(--sub)">Todo dia 5 · próximo saque sugerido: <span class="num" id="p-next-pay"></span></div></div><button class="btn soft" onclick="toast('parent','Mesada marcada como paga ✓ (registrada no extrato)')">Pagar ✓</button></div>
+            <div class="row"><div class="grow"><b>Teto mensal</b><div style="font-size:.72rem;color:var(--sub)">R$ 80 · comprometido até agora: R$ 52 ✅</div></div></div>
+            <div class="row"><div class="grow"><b>Juros do cofre</b><div style="font-size:.72rem;color:var(--sub)">2% ao mês sobre o saldo parado — ensina juros compostos</div></div><button class="btn ghost" onclick="toast('parent','Juros do cofre ativado 🪙')">Ativar</button></div>
+          </div>
+
+          <h2 class="sec">Metas do Léo</h2>
+          <div class="card">
+            <div class="row">
+              <div class="dot">🛹</div>
+              <div class="grow"><b style="font-size:.85rem">Skate novo</b>
+                <div class="num" style="font-size:.72rem; color:var(--sub)" id="p-goal"></div>
+              </div>
+              <span class="chip ok">2:1 ativo</span>
+            </div>
+            <div class="bar" style="margin-top:10px"><i id="p-goal-bar"></i></div>
+            <div style="font-size:.7rem; color:var(--sub); margin-top:8px">Estrelas guardadas em meta são <b>imunes a multas</b> — poupar é seguro.</div>
+          </div>
+        </section>
+
+        <!-- FAMILIA -->
+        <section class="scr" id="p-familia">
+          <h2 class="sec">Perfis</h2>
+          <div class="card stack" style="font-size:.84rem">
+            <div class="row"><div class="avatar">🦄</div><div class="grow"><b>Ana, 8</b><div style="font-size:.72rem;color:var(--sub)">Modo Explorador · 1 ⭐ = R$ 0,40</div></div></div>
+            <div class="row"><div class="avatar">🦖</div><div class="grow"><b>Léo, 11</b><div style="font-size:.72rem;color:var(--sub)">Modo Pro · 1 ⭐ = R$ 0,50 · saque liberado</div></div></div>
+            <div class="row"><div class="avatar">👨</div><div class="grow"><b>Marcos (pai)</b><div style="font-size:.72rem;color:var(--sub)">Admin · carteira separada (modo dois lares)</div></div></div>
+            <div class="row"><div class="avatar">👵</div><div class="grow"><b>Vó Lúcia</b><div style="font-size:.72rem;color:var(--sub)">Colaboradora · aprova missões, não mexe em dinheiro</div></div></div>
+          </div>
+
+          <h2 class="sec">Boletim de julho — Léo</h2>
+          <div class="card stack" style="font-size:.8rem">
+            <div class="row"><span style="font-size:1.1rem">✅</span><div class="grow">Conclusão: <b>87%</b> (+9 p.p. vs junho)</div></div>
+            <div class="row"><span style="font-size:1.1rem">⭐</span><div class="grow">Qualidade média: <b>2,4 / 3</b></div></div>
+            <div class="row"><span style="font-size:1.1rem">💰</span><div class="grow">Perfil: <b>poupador</b> — guardou 64% do que ganhou</div></div>
+            <div class="row" style="background:var(--star-soft); border-radius:12px; padding:10px"><span style="font-size:1.1rem">💡</span><div class="grow"><b>Insight:</b> Léo falha mais nas missões da manhã. Que tal mover "lição de casa" para as 16h?</div></div>
+          </div>
+        </section>
+      </div>
+
+      <nav class="tabbar" aria-label="Navegação dos pais">
+        <button class="on" data-k="p-painel" onclick="parTab(this)"><span class="ti">📋</span>Painel</button>
+        <button data-k="p-missoes" onclick="parTab(this)"><span class="ti">🗂️</span>Missões</button>
+        <div style="position:relative; text-align:center">
+          <button class="cta" aria-label="Criar missão" onclick="openSheet('sh-create')">＋<small>Criar</small></button>
+        </div>
+        <button data-k="p-financeiro" onclick="parTab(this)"><span class="ti">🏦</span>Financeiro</button>
+        <button data-k="p-familia" onclick="parTab(this)"><span class="ti">👪</span>Família</button>
+      </nav>
+    </div>
+
+    <!-- ================= SHEETS ================= -->
+    <div class="sheet-veil" id="sh-deliver" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Entregar missão</h3>
+        <div class="stack" id="deliver-list"></div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-create" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Nova missão para o Léo — 20 segundos ⏱️</h3>
+        <div class="stack">
+          <button class="btn soft tpl" onclick="criar('🧸 Guardar os brinquedos',5)">🧸 Guardar os brinquedos · <b>5 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 6+)</span></button>
+          <button class="btn soft tpl" onclick="criar('🐕 Passear com o Thor',8)">🐕 Passear com o Thor · <b>8 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 10+)</span></button>
+          <button class="btn soft tpl" onclick="criar('🍽️ Lavar a louça do jantar',10)">🍽️ Lavar a louça do jantar · <b>10 ⭐</b></button>
+          <button class="btn ghost tpl" onclick="criar('🎤 Regar as plantas',6)">🎤 Ditar por voz: “Léo, regar as plantas, 6 estrelas” → o app monta a missão</button>
+          <label class="row" style="font-size:.78rem; color:var(--sub)"><input type="checkbox" checked> Publicar também no mural de bicos (qualquer filho pode pegar)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-card" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Aplicar cartão — Léo</h3>
+        <div class="stack">
+          <button class="btn soft tpl" onclick="cartao('amarelo','Não cumpriu o combinado')">🟨 Amarelo · advertência, sem custo</button>
+          <button class="btn danger tpl" onclick="cartao('vermelho','Briga com a irmã',10)">🟥 Vermelho · Briga com a irmã · <b>−10 ⭐</b></button>
+          <button class="btn danger tpl" onclick="cartao('vermelho','Desrespeito',15)">🟥 Vermelho · Desrespeito · <b>−15 ⭐</b></button>
+          <div style="font-size:.72rem; color:var(--sub)">Multa nunca toca as estrelas guardadas em meta. Léo pode contestar 1 vez — o app avisa vocês dois.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-flash" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>⚡ Missão relâmpago</h3>
+        <div class="stack">
+          <button class="btn soft tpl" onclick="flash('🗑️ Descer com o lixo AGORA',10)">🗑️ Descer com o lixo · vale <b>2× (10 ⭐)</b> se feita em 1 h</button>
+          <button class="btn soft tpl" onclick="flash('🚗 Ajudar a descarregar as compras',12)">🚗 Descarregar as compras · <b>2× (12 ⭐)</b> · 30 min</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- shared state ---------------- */
+const R$ = v => 'R$ ' + v.toFixed(2).replace('.', ',');
+const TAXA = 0.5;
+const state = {
+  stars: 86, reserved: 180, streak: 6,
+  goal: { name: 'Skate novo', price: 320 },
+  missions: [
+    { id: 1, name: 'Arrumar a cama', icon: '🛏️', period: 'Manhã', stars: 5, st: 'approved', nota: 3 },
+    { id: 2, name: 'Lição de casa', icon: '📚', period: 'Tarde', stars: 10, st: 'todo' },
+    { id: 3, name: 'Tirar o lixo', icon: '🗑️', period: 'Noite', stars: 5, st: 'todo', foto: true },
+    { id: 4, name: 'Ração do Thor', icon: '🐕', period: 'Noite', stars: 4, st: 'delivered' },
+  ],
+  bicos: [
+    { id: 90, name: 'Lavar o carro do papai', icon: '🚗', stars: 20 },
+    { id: 91, name: 'Organizar a despensa', icon: '🥫', stars: 15 },
+  ],
+  resgates: [{ id: 70, name: '30 min extras de videogame', icon: '🎮', cost: 15, st: 'pending' }],
+  loja: [
+    { name: '30 min extras de videogame', icon: '🎮', cost: 15 },
+    { name: 'Escolher o filme da sexta', icon: '🍿', cost: 10 },
+    { name: 'R$ 10 no Pix', icon: '💸', cost: 20 },
+  ],
+  ledger: [
+    { d: 'Arrumar a cama · ⭐⭐⭐ caprichou! (+20%)', v: +6, t: 'hoje 07h40' },
+    { d: 'Sequência de 7 dias · bônus', v: +5, t: 'ontem' },
+    { d: 'Resgate: sorvete no parque', v: -12, t: 'sáb' },
+    { d: 'Guardou na meta Skate', v: -20, t: 'sex', neutral: true },
+  ],
+  feed: ['⭐⭐⭐ Papai aprovou "Arrumar a cama" — caprichou! +6 ⭐', '⚡ Nova missão relâmpago pode aparecer a qualquer momento…'],
+  voucher: null,
+  nextId: 100,
+};
+
+/* ---------------- helpers ---------------- */
+const $ = id => document.getElementById(id);
+let toastTimer;
+function toast(app, msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function openSheet(id){ $(id).classList.add('on'); if(id==='sh-deliver') renderDeliver(); }
+function closeSheets(){ document.querySelectorAll('.sheet-veil').forEach(s => s.classList.remove('on')); }
+function pushLedger(d, v, neutral){ state.ledger.unshift({ d, v, t: 'agora', neutral }); }
+
+/* ---------------- app / tab switching ---------------- */
+function setApp(app){
+  $('wrap').dataset.app = app;
+  $('app-kid').style.display = app === 'kid' ? 'contents' : 'none';
+  $('app-parent').style.display = app === 'parent' ? 'contents' : 'none';
+  $('sw-kid').classList.toggle('on', app === 'kid');
+  $('sw-parent').classList.toggle('on', app === 'parent');
+  closeSheets(); render();
+}
+function switchTab(btn, prefix){
+  btn.closest('.tabbar').querySelectorAll('button[data-k]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.scr[id^="' + prefix + '"]').forEach(s => s.classList.remove('on'));
+  $(btn.dataset.k).classList.add('on');
+}
+const kidTab = b => switchTab(b, 'k-');
+const parTab = b => switchTab(b, 'p-');
+
+/* ---------------- kid actions ---------------- */
+function deliver(id){
+  const m = state.missions.find(x => x.id === id);
+  m.st = 'delivered'; closeSheets();
+  toast('kid', '🚀 Missão entregue! Aguardando o papai avaliar…');
+  render();
+}
+function guardar(n){
+  if (state.stars < n) return toast('kid', 'Estrelas livres insuficientes 😅');
+  state.stars -= n; state.reserved += n;
+  const match = Math.floor(n / 2);
+  state.reserved += match;
+  pushLedger('Guardou na meta Skate (+' + match + ' ⭐ dos pais no 2:1)', -n, true);
+  toast('kid', '🛹 +' + (n + match) + ' ⭐ na meta (' + match + ' dos pais)! Faltam ' + Math.max(0, state.goal.price - state.reserved));
+  render();
+}
+function resgatar(item){
+  if (state.stars < item.cost) return toast('kid', 'Faltam ' + (item.cost - state.stars) + ' ⭐ para esse resgate');
+  state.resgates.push({ id: state.nextId++, name: item.name, icon: item.icon, cost: item.cost, st: 'pending' });
+  toast('kid', '📨 Pedido enviado! O papai precisa aprovar.');
+  render();
+}
+function pegarBico(id){
+  const i = state.bicos.findIndex(b => b.id === id);
+  const b = state.bicos.splice(i, 1)[0];
+  state.missions.push({ id: b.id, name: b.name + ' (bico)', icon: b.icon, period: 'Extra', stars: b.stars, st: 'todo' });
+  state.feed.unshift('💼 Você pegou o bico "' + b.name + '" antes da Ana!');
+  toast('kid', '💼 Bico é seu! Corre antes que expire.');
+  render();
+}
+
+/* ---------------- parent actions ---------------- */
+function approve(id, nota){
+  const m = state.missions.find(x => x.id === id);
+  const mult = nota === 1 ? 0.5 : nota === 2 ? 1 : 1.2;
+  const ganho = Math.round(m.stars * mult);
+  m.st = 'approved'; m.nota = nota;
+  state.stars += ganho;
+  const rot = nota === 1 ? '⭐ feito nas coxas (50%)' : nota === 2 ? '⭐⭐ bem feito' : '⭐⭐⭐ caprichou! (+20%)';
+  pushLedger(m.name + ' · ' + rot, +ganho);
+  state.feed.unshift('✅ Papai aprovou "' + m.name + '" ' + '⭐'.repeat(nota) + ' +' + ganho + ' ⭐');
+  toast('parent', 'Aprovada com ' + '⭐'.repeat(nota) + ' → +' + ganho + ' ⭐ para o Léo');
+  render();
+}
+function devolver(id){
+  const m = state.missions.find(x => x.id === id);
+  m.st = 'todo'; m.redo = true;
+  state.feed.unshift('↩️ "' + m.name + '" voltou: "faltou caprichar, tenta de novo até 20h" — sem desconto na 2ª entrega');
+  toast('parent', 'Devolvida com motivo e novo prazo. Sem redução na 2ª tentativa.');
+  render();
+}
+function approveResgate(id){
+  const r = state.resgates.find(x => x.id === id);
+  r.st = 'ok'; state.stars -= r.cost;
+  pushLedger('Resgate: ' + r.name, -r.cost);
+  state.voucher = { name: r.name, icon: r.icon, by: 'Papai', at: 'hoje ' + new Date().getHours() + 'h' };
+  toast('parent', 'Resgate aprovado → virou voucher no app do Léo 🎟️');
+  render();
+}
+function cartao(tipo, motivo, valor){
+  closeSheets();
+  if (tipo === 'amarelo') {
+    state.feed.unshift('🟨 Cartão amarelo: "' + motivo + '". Sem custo — 3 amarelos viram vermelho.');
+    toast('parent', '🟨 Advertência registrada. Léo foi notificado.');
+  } else {
+    const desc = Math.min(valor, state.stars);
+    state.stars -= desc;
+    pushLedger('🟥 Cartão vermelho: ' + motivo, -desc);
+    state.feed.unshift('🟥 Cartão vermelho (−' + desc + ' ⭐): "' + motivo + '". Você pode contestar 1 vez.');
+    toast('parent', '🟥 −' + desc + ' ⭐. As estrelas da meta ficaram intocadas.');
+  }
+  render();
+}
+function bonus(){
+  state.stars += 5;
+  pushLedger('🎁 Bônus surpresa da mamãe', +5);
+  state.feed.unshift('🎁 Bônus surpresa! +5 ⭐ da mamãe, só porque você ajudou sem pedir.');
+  toast('parent', '🎁 +5 ⭐ enviadas com uma mensagem para o Léo');
+  render();
+}
+function criar(nome, stars){
+  closeSheets();
+  const icon = nome.split(' ')[0];
+  state.missions.push({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Tarde', stars, st: 'todo' });
+  state.feed.unshift('🆕 Nova missão: "' + nome.slice(icon.length + 1) + '" (' + stars + ' ⭐)');
+  toast('parent', 'Missão publicada no app do Léo em ' + (Math.floor(Math.random() * 9) + 8) + ' segundos ✓');
+  render();
+}
+function flash(nome, stars){
+  closeSheets();
+  const icon = nome.split(' ')[0];
+  state.missions.unshift({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Agora', stars, st: 'todo', flash: true });
+  state.feed.unshift('⚡ MISSÃO RELÂMPAGO: "' + nome.slice(icon.length + 1) + '" vale 2× por tempo limitado!');
+  toast('parent', '⚡ Relâmpago publicada — vale 2× na próxima 1 h');
+  render();
+}
+
+/* ---------------- render ---------------- */
+function missionChip(m){
+  if (m.st === 'approved') return '<span class="chip ok">✓ ' + '⭐'.repeat(m.nota || 2) + '</span>';
+  if (m.st === 'delivered') return '<span class="chip wait">⏳ avaliando</span>';
+  if (m.flash) return '<span class="chip flash">⚡ 2× · 0h58</span>';
+  if (m.redo) return '<span class="chip wait">↩️ refazer</span>';
+  return '<span class="chip star num">+' + m.stars + ' ⭐</span>';
+}
+function render(){
+  /* kid header + cofre */
+  $('k-stars').textContent = state.stars;
+  $('k-streak').textContent = state.streak;
+  $('k-total').textContent = state.stars + state.reserved;
+  $('k-livre').textContent = state.stars;
+  $('k-res').textContent = state.reserved;
+  $('k-real').textContent = 'Vale ' + R$((state.stars + state.reserved) * TAXA) + ' na taxa de hoje (1 ⭐ = R$ 0,50)';
+  const pct = Math.min(100, Math.round(state.reserved / state.goal.price * 100));
+  const left = Math.max(0, state.goal.price - state.reserved);
+  $('k-goal-left').textContent = pct + '%';
+  $('k-goal-bar').style.width = pct + '%';
+  $('k-goal-bar2').style.width = pct + '%';
+  $('k-goal-note').textContent = left > 0 ? 'Faltam ' + left + ' ⭐ · no seu ritmo, ~' + Math.ceil(left / 12) + ' dias 💪' : 'META ATINGIDA! 🎉 Mostre para o papai!';
+  $('k-goal2').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ guardadas';
+
+  /* kid trail */
+  $('k-trail').innerHTML = state.missions.map(m =>
+    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
+    '</div><div class="meta">' + m.period + (m.foto ? ' · 📷 exige foto' : '') + '</div></div>' + missionChip(m) + '</div>'
+  ).join('');
+
+  /* kid week + bicos */
+  $('k-week').innerHTML = state.missions.map(m =>
+    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
+    '</div><div class="meta">' + (m.period === 'Extra' ? 'Bico avulso' : 'Recorrente · ' + m.period) + '</div></div><span class="chip star num">+' + m.stars + ' ⭐</span></div>'
+  ).join('');
+  $('k-bicos').innerHTML = state.bicos.length ? state.bicos.map(b =>
+    '<div class="card row"><div class="dot">' + b.icon + '</div><div class="grow"><div style="font-weight:800;font-size:.85rem">' + b.name +
+    '</div><div style="font-size:.72rem;color:var(--sub)">Avulsa · primeiro que pegar, leva</div></div>' +
+    '<button class="btn primary" onclick="pegarBico(' + b.id + ')">Pegar +' + b.stars + ' ⭐</button></div>'
+  ).join('') : '<div class="empty">Nenhum bico no mural agora. Volte mais tarde! 👀</div>';
+
+  /* kid feed */
+  $('k-feed').innerHTML = state.feed.slice(0, 4).map(f => '<div>' + f + '</div>').join('');
+
+  /* kid loja + voucher + ledger */
+  $('k-loja').innerHTML = state.loja.map((l, i) =>
+    '<div class="card row"><div class="dot">' + l.icon + '</div><div class="grow"><div style="font-weight:800;font-size:.85rem">' + l.name +
+    '</div><div class="num" style="font-size:.72rem;color:var(--sub)">' + l.cost + ' ⭐</div></div>' +
+    '<button class="btn soft" onclick="resgatar(state.loja[' + i + '])">Resgatar</button></div>'
+  ).join('');
+  $('k-voucher-slot').innerHTML = state.voucher ?
+    '<div class="voucher row"><span style="font-size:1.4rem">' + state.voucher.icon + '</span><div class="grow">' +
+    '<b style="font-size:.84rem">🎟️ Voucher: ' + state.voucher.name + '</b>' +
+    '<div style="font-size:.7rem;color:var(--sub)">Liberado por ' + state.voucher.by + ' · ' + state.voucher.at + ' · mostre esta tela para usar</div></div></div>' : '';
+  $('k-ledger').innerHTML = state.ledger.slice(0, 6).map(l =>
+    '<li><div>' + l.d + '<small>' + l.t + '</small></div><span class="num ' + (l.neutral ? '' : l.v > 0 ? 'pos' : 'neg') + '">' +
+    (l.v > 0 ? '+' : '') + l.v + ' ⭐</span></li>'
+  ).join('');
+
+  /* parent panel */
+  const fila = state.missions.filter(m => m.st === 'delivered');
+  $('p-fila').innerHTML = fila.length ? fila.map(m =>
+    '<div class="card approve-card"><div class="row"><div class="dot">' + m.icon + '</div><div class="grow">' +
+    '<b style="font-size:.88rem">' + m.name + '</b><div style="font-size:.72rem;color:var(--sub)">Léo · entregue às 17h42 · vale ' + m.stars + ' ⭐</div></div></div>' +
+    '<div class="photo">📷</div>' +
+    '<div style="font-size:.7rem;color:var(--sub);margin-bottom:8px">Avalie a qualidade — a nota multiplica o valor (50% · 100% · 120%)</div>' +
+    '<div class="stars-btns">' +
+    '<button class="btn soft" onclick="approve(' + m.id + ',1)">⭐<br>' + Math.round(m.stars * .5) + '</button>' +
+    '<button class="btn soft" onclick="approve(' + m.id + ',2)">⭐⭐<br>' + m.stars + '</button>' +
+    '<button class="btn primary" onclick="approve(' + m.id + ',3)">⭐⭐⭐<br>' + Math.round(m.stars * 1.2) + '</button>' +
+    '<button class="btn ghost" onclick="devolver(' + m.id + ')">↩️</button></div></div>'
+  ).join('') : '<div class="empty">Fila zerada ✨ Sem aprovação pendente — entregas não avaliadas em 24 h são aprovadas com ⭐⭐ automaticamente.</div>';
+
+  const resg = state.resgates.filter(r => r.st === 'pending');
+  $('p-resgates').innerHTML = resg.length ? resg.map(r =>
+    '<div class="card row"><div class="dot">' + r.icon + '</div><div class="grow"><b style="font-size:.84rem">' + r.name +
+    '</b><div class="num" style="font-size:.72rem;color:var(--sub)">Léo · custa ' + r.cost + ' ⭐</div></div>' +
+    '<button class="btn primary" onclick="approveResgate(' + r.id + ')">Aprovar 🎟️</button></div>'
+  ).join('') : '<div class="empty">Nenhum resgate pendente.</div>';
+
+  const done = state.missions.filter(m => m.st === 'approved').length;
+  $('p-leo-pulse').textContent = done + '/' + state.missions.length + ' missões · 🔥' + state.streak;
+  const pend = fila.length + resg.length;
+  $('p-sub').textContent = pend ? pend + ' decisão(ões) esperando você — 60 segundos' : 'Tudo em dia ✨';
+
+  /* parent missões/financeiro */
+  $('p-week').innerHTML = state.missions.map(m =>
+    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
+    '</div><div class="meta">' + m.period + ' · ' + m.stars + ' ⭐' + (m.flash ? ' · ⚡ relâmpago' : '') + '</div></div>' + missionChip(m) + '</div>'
+  ).join('');
+  $('p-total').textContent = state.stars + state.reserved;
+  $('p-total-real').textContent = '≈ ' + R$((state.stars + state.reserved) * TAXA);
+  $('p-livre').textContent = state.stars;
+  $('p-res').textContent = state.reserved;
+  $('p-next-pay').textContent = R$(state.stars * TAXA);
+  $('p-goal').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ · você precificou em R$ 160';
+  $('p-goal-bar').style.width = pct + '%';
+}
+
+function renderDeliver(){
+  const todo = state.missions.filter(m => m.st === 'todo');
+  $('deliver-list').innerHTML = todo.length ? todo.map(m =>
+    '<button class="btn soft tpl" onclick="deliver(' + m.id + ')">' + m.icon + ' ' + m.name +
+    (m.foto ? ' · 📷 tire a foto' : '') + ' → <b>enviar</b></button>'
+  ).join('') : '<div class="empty">Tudo entregue por hoje! 🔥 Sua sequência está garantida.</div>';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
+render();
+</script>
