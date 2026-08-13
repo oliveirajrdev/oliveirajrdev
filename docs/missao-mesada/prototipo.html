@@ -85,6 +85,7 @@
     padding:8px 8px calc(12px + env(safe-area-inset-bottom));
   }
   .tabbar.three{grid-template-columns:repeat(3,1fr)}
+  .tabbar.four{grid-template-columns:repeat(4,1fr)}
   .tabbar button{
     border:0; background:none; font:inherit; cursor:pointer; color:var(--sub);
     display:flex; flex-direction:column; align-items:center; gap:2px;
@@ -101,6 +102,14 @@
     display:flex; align-items:center; justify-content:center;
   }
   .cta small{position:absolute; bottom:-16px; font-size:.58rem; font-weight:700; color:var(--sub)}
+  .fab{
+    position:absolute; right:16px; bottom:78px; z-index:55;
+    width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
+    background:var(--brand); color:#fff; font-size:1.3rem;
+    box-shadow:0 8px 18px rgba(0,0,0,.28);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .fab:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
 
   .scr{display:none; animation:fade .18s ease}
   .scr.on{display:block}
@@ -208,7 +217,7 @@
   .quick{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
   .quick .btn{display:flex; flex-direction:column; gap:4px; align-items:center; padding:12px 6px; font-size:.72rem}
   .quick .btn em{font-style:normal; font-size:1.2rem}
-  .approve-card .photo{
+  .photo{
     height:104px; border-radius:12px; background:var(--brand-soft);
     display:flex; align-items:center; justify-content:center; font-size:2rem; margin:10px 0;
     color:var(--brand);
@@ -365,19 +374,6 @@
 
           <h2 class="sec">Trocas pendentes</h2>
           <div class="stack" id="p-trocas"></div>
-
-          <h2 class="sec">Pulso do dia</h2>
-          <div class="pulse">
-            <div class="p"><div style="font-size:1.4rem">🦄</div><b>Ana</b><span class="num">3/4 missões · 🔥12</span></div>
-            <div class="p"><div style="font-size:1.4rem">🦖</div><b>Léo</b><span class="num" id="p-leo-pulse"></span></div>
-          </div>
-
-          <h2 class="sec">Ações rápidas</h2>
-          <div class="quick">
-            <button class="btn soft" onclick="openSheet('sh-flash')"><em>⚡</em>Relâmpago</button>
-            <button class="btn danger" onclick="openSheet('sh-card')"><em>🟨🟥</em>Cartão</button>
-            <button class="btn soft" onclick="bonus()"><em>🎁</em>Bônus</button>
-          </div>
         </section>
 
         <!-- MISSOES (pais) -->
@@ -442,14 +438,13 @@
         </section>
       </div>
 
-      <nav class="tabbar" aria-label="Navegação dos pais">
+      <button class="fab" aria-label="Cadastrar missão" onclick="openSheet('sh-create')">＋</button>
+
+      <nav class="tabbar four" aria-label="Navegação dos pais">
         <button class="on" data-k="p-painel" onclick="parTab(this)"><span class="ti">📋</span>Painel</button>
         <button data-k="p-missoes" onclick="parTab(this)"><span class="ti">🗂️</span>Missões</button>
-        <div style="position:relative; text-align:center">
-          <button class="cta" aria-label="Criar missão" onclick="openSheet('sh-create')">＋<small>Criar</small></button>
-        </div>
-        <button data-k="p-financeiro" onclick="parTab(this)"><span class="ti">🏦</span>Financeiro</button>
-        <button data-k="p-familia" onclick="parTab(this)"><span class="ti">👪</span>Família</button>
+        <button data-k="p-financeiro" onclick="parTab(this)"><span class="ti">🎁</span>Recompensas</button>
+        <button data-k="p-familia" onclick="parTab(this)"><span class="ti">⚙️</span>Configurações</button>
       </nav>
     </div>
 
@@ -464,6 +459,22 @@
           <button class="btn soft tpl" onclick="criar('🍽️ Lavar a louça do jantar',10)">🍽️ Lavar a louça do jantar · <b>10 ⭐</b></button>
           <button class="btn ghost tpl" onclick="criar('🎤 Regar as plantas',6)">🎤 Ditar por voz: “Léo, regar as plantas, 6 estrelas” → o app monta a missão</button>
         </div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-approve" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Avaliar entrega</h3>
+        <div id="approve-modal-body"></div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-reject" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Devolver tarefa</h3>
+        <div id="reject-modal-body"></div>
       </div>
     </div>
 
@@ -582,14 +593,42 @@ function approve(id, nota){
   state.stars += ganho;
   const rot = nota === 1 ? '⭐ feito nas coxas (50%)' : nota === 2 ? '⭐⭐ bem feito' : '⭐⭐⭐ caprichou! (+20%)';
   pushLedger(m.name + ' · ' + rot, +ganho);
+  closeSheets();
   toast('parent', 'Aprovada com ' + '⭐'.repeat(nota) + ' → +' + ganho + ' ⭐ para o Léo');
   render();
 }
-function devolver(id){
+function devolver(id, motivo){
   const m = state.missions.find(x => x.id === id);
   m.st = 'todo'; m.redo = true;
-  toast('parent', 'Devolvida com motivo e novo prazo. Sem redução na 2ª tentativa.');
+  closeSheets();
+  toast('parent', 'Devolvida: "' + motivo + '" — novo prazo, sem redução na 2ª tentativa.');
   render();
+}
+function openApprove(id){
+  const m = state.missions.find(x => x.id === id);
+  $('approve-modal-body').innerHTML =
+    '<div class="row" style="margin-bottom:10px"><div class="dot">' + m.icon + '</div><div class="grow">' +
+    '<b style="font-size:.88rem">' + m.name + '</b><div style="font-size:.72rem;color:var(--sub)">Léo · entregue às 17h42 · vale ' + m.stars + ' ⭐</div></div></div>' +
+    '<div class="photo">📷</div>' +
+    '<div style="font-size:.72rem;color:var(--sub);margin:10px 0">A nota multiplica o valor da tarefa</div>' +
+    '<div class="stars-btns">' +
+    '<button class="btn soft" onclick="approve(' + id + ',1)">⭐<br>' + Math.round(m.stars * .5) + '</button>' +
+    '<button class="btn soft" onclick="approve(' + id + ',2)">⭐⭐<br>' + m.stars + '</button>' +
+    '<button class="btn primary" onclick="approve(' + id + ',3)">⭐⭐⭐<br>' + Math.round(m.stars * 1.2) + '</button>' +
+    '</div>';
+  openSheet('sh-approve');
+}
+function openReject(id){
+  const m = state.missions.find(x => x.id === id);
+  $('reject-modal-body').innerHTML =
+    '<div class="row" style="margin-bottom:12px"><div class="dot">' + m.icon + '</div><div class="grow">' +
+    '<b style="font-size:.88rem">' + m.name + '</b><div style="font-size:.72rem;color:var(--sub)">Escolha o motivo — Léo ganha um novo prazo</div></div></div>' +
+    '<div class="stack">' +
+    '<button class="btn soft tpl" onclick="devolver(' + id + ',\'Faltou capricho\')">Faltou capricho</button>' +
+    '<button class="btn soft tpl" onclick="devolver(' + id + ',\'Não terminou\')">Não terminou</button>' +
+    '<button class="btn soft tpl" onclick="devolver(' + id + ',\'Foto não confere\')">Foto não confere</button>' +
+    '</div>';
+  openSheet('sh-reject');
 }
 function aprovarTroca(id){
   const r = state.trocas.find(x => x.id === id);
@@ -707,18 +746,13 @@ function render(){
     (l.v > 0 ? '+' : '') + l.v + ' ⭐</span></li>'
   ).join('');
 
-  /* parent panel */
+  /* parent panel — card de aprovação compacto; a avaliação vira modal */
   const fila = state.missions.filter(m => m.st === 'delivered');
   $('p-fila').innerHTML = fila.length ? fila.map(m =>
-    '<div class="card approve-card"><div class="row"><div class="dot">' + m.icon + '</div><div class="grow">' +
-    '<b style="font-size:.88rem">' + m.name + '</b><div style="font-size:.72rem;color:var(--sub)">Léo · entregue às 17h42 · vale ' + m.stars + ' ⭐</div></div></div>' +
-    '<div class="photo">📷</div>' +
-    '<div style="font-size:.7rem;color:var(--sub);margin-bottom:8px">Avalie a qualidade — a nota multiplica o valor (50% · 100% · 120%)</div>' +
-    '<div class="stars-btns">' +
-    '<button class="btn soft" onclick="approve(' + m.id + ',1)">⭐<br>' + Math.round(m.stars * .5) + '</button>' +
-    '<button class="btn soft" onclick="approve(' + m.id + ',2)">⭐⭐<br>' + m.stars + '</button>' +
-    '<button class="btn primary" onclick="approve(' + m.id + ',3)">⭐⭐⭐<br>' + Math.round(m.stars * 1.2) + '</button>' +
-    '<button class="btn ghost" onclick="devolver(' + m.id + ')">↩️</button></div></div>'
+    '<div class="card row"><div class="dot">' + m.icon + '</div><div class="grow">' +
+    '<b style="font-size:.84rem">' + m.name + '</b><div style="font-size:.7rem;color:var(--sub)">Léo · vale ' + m.stars + ' ⭐</div></div>' +
+    '<button class="btn ghost" style="padding:8px 10px" onclick="openReject(' + m.id + ')">↩️</button>' +
+    '<button class="btn primary" style="padding:8px 12px" onclick="openApprove(' + m.id + ')">✓ Aprovar</button></div>'
   ).join('') : '<div class="empty">Fila zerada ✨ Sem aprovação pendente — entregas não avaliadas em 24 h são aprovadas com ⭐⭐ automaticamente.</div>';
 
   const resg = state.trocas.filter(r => r.st === 'pending');
@@ -728,8 +762,6 @@ function render(){
     '<button class="btn primary" onclick="aprovarTroca(' + r.id + ')">Aprovar 🎟️</button></div>'
   ).join('') : '<div class="empty">Nenhuma troca pendente.</div>';
 
-  const done = state.missions.filter(m => m.st === 'approved').length;
-  $('p-leo-pulse').textContent = done + '/' + state.missions.length + ' missões · 🔥' + state.streak;
   const pend = fila.length + resg.length;
   $('p-sub').textContent = pend ? pend + ' decisão(ões) esperando você — 60 segundos' : 'Tudo em dia ✨';
   $('p-bell-dot').style.display = pend ? 'block' : 'none';
