@@ -181,8 +181,6 @@
     border-radius:20px; padding:14px 16px;
   }
   .kid-hero .big{font-size:1.7rem; font-weight:800; letter-spacing:-.02em}
-  .lvlbar{height:6px; border-radius:99px; background:rgba(255,255,255,.28); margin-top:10px}
-  .lvlbar i{display:block; height:100%; border-radius:99px; background:#FFD262}
   .goalcard{background:linear-gradient(135deg,#FFAD1F,#ff8f3d); color:#4a2c00; border:0}
   .goalcard .bar{background:rgba(255,255,255,.5)}
   .goalcard .bar i{background:#fff}
@@ -275,44 +273,32 @@
           <div class="card"><div id="k-trail"></div></div>
         </section>
 
-        <!-- COFRE -->
-        <section class="scr" id="k-cofre">
+        <!-- METAS -->
+        <section class="scr" id="k-metas">
           <div class="kid-hero">
-            <div style="font-size:.72rem; font-weight:700; opacity:.85">Meu cofre</div>
+            <div style="font-size:.72rem; font-weight:700; opacity:.85">Meu saldo</div>
             <div class="big num">⭐ <span id="k-total"></span></div>
-            <div class="row num" style="font-size:.75rem; margin-top:6px; gap:14px">
-              <span>Livre: <b id="k-livre"></b></span>
-              <span>Guardado na meta: <b id="k-res"></b></span>
-            </div>
-            <div class="lvlbar"><i id="k-cofre-bar" style="width:40%"></i></div>
             <div class="num" style="font-size:.7rem; margin-top:6px; opacity:.9" id="k-real"></div>
-          </div>
-
-          <h2 class="sec">Metas</h2>
-          <div class="card">
-            <div class="row">
-              <div class="dot">🛹</div>
-              <div class="grow">
-                <div style="font-weight:800; font-size:.88rem">Skate novo</div>
-                <div class="num" style="font-size:.72rem; color:var(--sub)" id="k-goal2"></div>
-              </div>
-            </div>
-            <div class="bar" style="margin:10px 0"><i id="k-goal-bar2"></i></div>
-            <div class="row">
-              <button class="btn soft grow" onclick="guardar(10)">Guardar 10 ⭐</button>
-              <button class="btn ghost" onclick="toast('kid','Papai coloca 1 ⭐ a cada 2 que você guarda 🤝')">2:1 dos pais</button>
-            </div>
           </div>
 
           <div id="k-voucher-slot" class="stack" style="margin-top:10px"></div>
 
-          <h2 class="sec">Loja da família</h2>
+          <h2 class="sec">Trocar estrelas</h2>
           <div class="stack" id="k-loja"></div>
+
+          <div class="card" style="margin-top:10px">
+            <div class="row">
+              <div class="dot">💸</div>
+              <div class="grow">
+                <div style="font-weight:800; font-size:.86rem">Virar dinheiro (Pix)</div>
+                <div style="font-size:.72rem; color:var(--sub)">Pago no dia da mesada · taxa definida pelo papai</div>
+              </div>
+            </div>
+            <button class="btn primary" style="width:100%; margin-top:10px" id="k-pix-btn" onclick="trocarPix()"></button>
+          </div>
 
           <h2 class="sec">Extrato</h2>
           <div class="card"><ul class="ledger" id="k-ledger"></ul></div>
-
-          <button class="btn ghost" style="width:100%; margin-top:12px" onclick="toast('kid','Pedido de saque enviado ao papai 💸')">💸 Sacar em dinheiro</button>
         </section>
 
         <!-- EU -->
@@ -332,7 +318,7 @@
             <div class="m">🎓<span>Hábito: cama</span></div>
             <div class="m off">🏆<span>100 missões</span></div>
             <div class="m off">🔥<span>30 dias</span></div>
-            <div class="m off">💰<span>Poupador</span></div>
+            <div class="m off">💰<span>10 trocas</span></div>
             <div class="m off">⚡<span>10 relâmpagos</span></div>
           </div>
           <h2 class="sec">Estante de conquistas</h2>
@@ -340,7 +326,7 @@
             <div class="dot">🎮</div>
             <div class="grow">
               <div style="font-weight:800; font-size:.85rem">Jogo do Dino</div>
-              <div style="font-size:.72rem; color:var(--sub)">Meta atingida em 12/06 · 250 ⭐ poupadas</div>
+              <div style="font-size:.72rem; color:var(--sub)">Trocado em 12/06 · 250 ⭐</div>
             </div>
           </div>
         </section>
@@ -348,7 +334,7 @@
 
       <nav class="tabbar three" aria-label="Navegação da criança">
         <button class="on" data-k="k-hoje" onclick="kidTab(this)"><span class="ti">📋</span>Tarefas</button>
-        <button data-k="k-cofre" onclick="kidTab(this)"><span class="ti">🎯</span>Metas</button>
+        <button data-k="k-metas" onclick="kidTab(this)"><span class="ti">🎯</span>Metas</button>
         <button data-k="k-eu" onclick="kidTab(this)"><span class="ti">🏆</span>Conquistas</button>
       </nav>
     </div>
@@ -371,8 +357,8 @@
           <h2 class="sec">Fila de aprovações</h2>
           <div class="stack" id="p-fila"></div>
 
-          <h2 class="sec">Resgates pendentes</h2>
-          <div class="stack" id="p-resgates"></div>
+          <h2 class="sec">Trocas pendentes</h2>
+          <div class="stack" id="p-trocas"></div>
 
           <h2 class="sec">Pulso do dia</h2>
           <div class="pulse">
@@ -405,19 +391,16 @@
         <!-- FINANCEIRO -->
         <section class="scr" id="p-financeiro">
           <div class="card" style="background:var(--brand); color:#fff; border:0">
-            <div style="font-size:.72rem; opacity:.85; font-weight:700">Carteira do Léo</div>
+            <div style="font-size:.72rem; opacity:.85; font-weight:700">Saldo do Léo</div>
             <div class="num" style="font-size:1.6rem; font-weight:800">⭐ <span id="p-total"></span> <span style="font-size:.85rem; font-weight:700; opacity:.85" id="p-total-real"></span></div>
-            <div class="row num" style="font-size:.74rem; margin-top:4px; opacity:.9; gap:14px">
-              <span>Livre: <b id="p-livre"></b></span><span>Em metas: <b id="p-res"></b></span>
-            </div>
           </div>
 
           <h2 class="sec">Regras da economia</h2>
           <div class="card stack" style="font-size:.82rem">
-            <div class="row"><div class="grow"><b>Taxa de conversão</b><div style="font-size:.72rem;color:var(--sub)">1 ⭐ = R$ 0,50 · por filho</div></div><button class="btn ghost" onclick="toast('parent','Simulador: nesse ritmo, Léo ganha ~R$ 46/mês')">Simular</button></div>
-            <div class="row"><div class="grow"><b>Dia da mesada</b><div style="font-size:.72rem;color:var(--sub)">Todo dia 5 · próximo saque sugerido: <span class="num" id="p-next-pay"></span></div></div><button class="btn soft" onclick="toast('parent','Mesada marcada como paga ✓ (registrada no extrato)')">Pagar ✓</button></div>
+            <div class="row"><div class="grow"><b>Cotação da estrela</b><div style="font-size:.72rem;color:var(--sub)">1 ⭐ = R$ 0,50 · configurada aqui, por filho</div></div><button class="btn ghost" onclick="toast('parent','Simulador: nesse ritmo, Léo ganha ~R$ 46/mês')">Simular</button></div>
+            <div class="row"><div class="grow"><b>Dia da mesada</b><div style="font-size:.72rem;color:var(--sub)">Todo dia 5 · próxima troca por Pix sugerida: <span class="num" id="p-next-pay"></span></div></div><button class="btn soft" onclick="toast('parent','Mesada marcada como paga ✓ (registrada no extrato)')">Pagar ✓</button></div>
             <div class="row"><div class="grow"><b>Teto mensal</b><div style="font-size:.72rem;color:var(--sub)">R$ 80 · comprometido até agora: R$ 52 ✅</div></div></div>
-            <div class="row"><div class="grow"><b>Juros do cofre</b><div style="font-size:.72rem;color:var(--sub)">2% ao mês sobre o saldo parado — ensina juros compostos</div></div><button class="btn ghost" onclick="toast('parent','Juros do cofre ativado 🪙')">Ativar</button></div>
+            <div class="row"><div class="grow"><b>Juros do saldo</b><div style="font-size:.72rem;color:var(--sub)">2% ao mês sobre estrelas não trocadas — ensina juros compostos</div></div><button class="btn ghost" onclick="toast('parent','Juros do saldo ativado 🪙')">Ativar</button></div>
           </div>
 
           <h2 class="sec">Metas do Léo</h2>
@@ -427,10 +410,9 @@
               <div class="grow"><b style="font-size:.85rem">Skate novo</b>
                 <div class="num" style="font-size:.72rem; color:var(--sub)" id="p-goal"></div>
               </div>
-              <span class="chip ok">2:1 ativo</span>
             </div>
             <div class="bar" style="margin-top:10px"><i id="p-goal-bar"></i></div>
-            <div style="font-size:.7rem; color:var(--sub); margin-top:8px">Estrelas guardadas em meta são <b>imunes a multas</b> — poupar é seguro.</div>
+            <div style="font-size:.7rem; color:var(--sub); margin-top:8px">Preço definido por você. Ao juntar estrelas suficientes, Léo troca direto no app dele.</div>
           </div>
         </section>
 
@@ -448,7 +430,7 @@
           <div class="card stack" style="font-size:.8rem">
             <div class="row"><span style="font-size:1.1rem">✅</span><div class="grow">Conclusão: <b>87%</b> (+9 p.p. vs junho)</div></div>
             <div class="row"><span style="font-size:1.1rem">⭐</span><div class="grow">Qualidade média: <b>2,4 / 3</b></div></div>
-            <div class="row"><span style="font-size:1.1rem">💰</span><div class="grow">Perfil: <b>poupador</b> — guardou 64% do que ganhou</div></div>
+            <div class="row"><span style="font-size:1.1rem">💰</span><div class="grow">Perfil: <b>focado na meta</b> — trocou só 20% do que ganhou, o resto está indo para o skate</div></div>
             <div class="row" style="background:var(--star-soft); border-radius:12px; padding:10px"><span style="font-size:1.1rem">💡</span><div class="grow"><b>Insight:</b> Léo falha mais nas missões da manhã. Que tal mover "lição de casa" para as 16h?</div></div>
           </div>
         </section>
@@ -487,7 +469,7 @@
           <button class="btn soft tpl" onclick="cartao('amarelo','Não cumpriu o combinado')">🟨 Amarelo · advertência, sem custo</button>
           <button class="btn danger tpl" onclick="cartao('vermelho','Briga com a irmã',10)">🟥 Vermelho · Briga com a irmã · <b>−10 ⭐</b></button>
           <button class="btn danger tpl" onclick="cartao('vermelho','Desrespeito',15)">🟥 Vermelho · Desrespeito · <b>−15 ⭐</b></button>
-          <div style="font-size:.72rem; color:var(--sub)">Multa nunca toca as estrelas guardadas em meta. Léo pode contestar 1 vez — o app avisa vocês dois.</div>
+          <div style="font-size:.72rem; color:var(--sub)">Léo pode contestar 1 vez — o app avisa vocês dois. Atenção: a multa sai do saldo total e pode atrasar uma troca.</div>
         </div>
       </div>
     </div>
@@ -512,25 +494,25 @@
 const R$ = v => 'R$ ' + v.toFixed(2).replace('.', ',');
 const TAXA = 0.5;
 const state = {
-  stars: 86, reserved: 180, streak: 6,
-  goal: { name: 'Skate novo', price: 320 },
+  stars: 86, streak: 6,
   missions: [
     { id: 1, name: 'Arrumar a cama', icon: '🛏️', period: 'Manhã', stars: 5, st: 'approved', nota: 3 },
     { id: 2, name: 'Lição de casa', icon: '📚', period: 'Tarde', stars: 10, st: 'todo' },
     { id: 3, name: 'Tirar o lixo', icon: '🗑️', period: 'Noite', stars: 5, st: 'todo', foto: true },
     { id: 4, name: 'Ração do Thor', icon: '🐕', period: 'Noite', stars: 4, st: 'delivered' },
   ],
-  resgates: [{ id: 70, name: '30 min extras de videogame', icon: '🎮', cost: 15, st: 'pending' }],
+  /* catálogo único de trocas — a meta (skate) é só o item mais caro da lista */
   loja: [
+    { name: 'Skate novo', icon: '🛹', cost: 320, meta: true },
     { name: '30 min extras de videogame', icon: '🎮', cost: 15 },
     { name: 'Escolher o filme da sexta', icon: '🍿', cost: 10 },
     { name: 'R$ 10 no Pix', icon: '💸', cost: 20 },
   ],
+  trocas: [{ id: 70, name: '30 min extras de videogame', icon: '🎮', cost: 15, st: 'pending' }],
   ledger: [
     { d: 'Arrumar a cama · ⭐⭐⭐ caprichou! (+20%)', v: +6, t: 'hoje 07h40' },
     { d: 'Sequência de 7 dias · bônus', v: +5, t: 'ontem' },
-    { d: 'Resgate: sorvete no parque', v: -12, t: 'sáb' },
-    { d: 'Guardou na meta Skate', v: -20, t: 'sex', neutral: true },
+    { d: 'Troca: sorvete no parque', v: -12, t: 'sáb' },
   ],
   voucher: null,
   nextId: 100,
@@ -572,19 +554,16 @@ function deliver(id){
   toast('kid', '🚀 Tarefa entregue! Aguardando o papai avaliar…');
   render();
 }
-function guardar(n){
-  if (state.stars < n) return toast('kid', 'Estrelas livres insuficientes 😅');
-  state.stars -= n; state.reserved += n;
-  const match = Math.floor(n / 2);
-  state.reserved += match;
-  pushLedger('Guardou na meta Skate (+' + match + ' ⭐ dos pais no 2:1)', -n, true);
-  toast('kid', '🛹 +' + (n + match) + ' ⭐ na meta (' + match + ' dos pais)! Faltam ' + Math.max(0, state.goal.price - state.reserved));
+function trocar(item){
+  if (state.stars < item.cost) return toast('kid', 'Faltam ' + (item.cost - state.stars) + ' ⭐ para essa troca');
+  state.trocas.push({ id: state.nextId++, name: item.name, icon: item.icon, cost: item.cost, st: 'pending' });
+  toast('kid', '📨 Pedido de troca enviado! O papai precisa aprovar.');
   render();
 }
-function resgatar(item){
-  if (state.stars < item.cost) return toast('kid', 'Faltam ' + (item.cost - state.stars) + ' ⭐ para esse resgate');
-  state.resgates.push({ id: state.nextId++, name: item.name, icon: item.icon, cost: item.cost, st: 'pending' });
-  toast('kid', '📨 Pedido enviado! O papai precisa aprovar.');
+function trocarPix(){
+  if (state.stars <= 0) return toast('kid', 'Ainda não há estrelas para trocar por Pix 😅');
+  state.trocas.push({ id: state.nextId++, name: 'Troca por Pix', icon: '💸', cost: state.stars, st: 'pending', pix: true });
+  toast('kid', '📨 Pedido de Pix enviado! Pagamento no dia da mesada.');
   render();
 }
 
@@ -606,12 +585,17 @@ function devolver(id){
   toast('parent', 'Devolvida com motivo e novo prazo. Sem redução na 2ª tentativa.');
   render();
 }
-function approveResgate(id){
-  const r = state.resgates.find(x => x.id === id);
+function aprovarTroca(id){
+  const r = state.trocas.find(x => x.id === id);
   r.st = 'ok'; state.stars -= r.cost;
-  pushLedger('Resgate: ' + r.name, -r.cost);
-  state.voucher = { name: r.name, icon: r.icon, by: 'Papai', at: 'hoje ' + new Date().getHours() + 'h' };
-  toast('parent', 'Resgate aprovado → virou voucher no app do Léo 🎟️');
+  if (r.pix) {
+    pushLedger('Troca por Pix (a pagar no dia 5)', -r.cost);
+    toast('parent', 'Troca por Pix aprovada → pagamento no dia da mesada 💸');
+  } else {
+    pushLedger('Troca: ' + r.name, -r.cost);
+    state.voucher = { name: r.name, icon: r.icon, by: 'Papai', at: 'hoje ' + new Date().getHours() + 'h' };
+    toast('parent', 'Troca aprovada → virou voucher no app do Léo 🎟️');
+  }
   render();
 }
 function cartao(tipo, motivo, valor){
@@ -622,7 +606,7 @@ function cartao(tipo, motivo, valor){
     const desc = Math.min(valor, state.stars);
     state.stars -= desc;
     pushLedger('🟥 Cartão vermelho: ' + motivo, -desc);
-    toast('parent', '🟥 −' + desc + ' ⭐. As estrelas da meta ficaram intocadas.');
+    toast('parent', '🟥 −' + desc + ' ⭐ do saldo. Léo pode contestar 1 vez.');
   }
   render();
 }
@@ -656,20 +640,20 @@ function missionChip(m){
   return '<span class="chip star num">+' + m.stars + ' ⭐</span>';
 }
 function render(){
-  /* kid header + cofre */
+  const goal = state.loja.find(l => l.meta);
+
+  /* kid header + metas */
   $('k-stars').textContent = state.stars;
   $('k-streak').textContent = state.streak;
-  $('k-total').textContent = state.stars + state.reserved;
-  $('k-livre').textContent = state.stars;
-  $('k-res').textContent = state.reserved;
-  $('k-real').textContent = 'Vale ' + R$((state.stars + state.reserved) * TAXA) + ' na taxa de hoje (1 ⭐ = R$ 0,50)';
-  const pct = Math.min(100, Math.round(state.reserved / state.goal.price * 100));
-  const left = Math.max(0, state.goal.price - state.reserved);
+  $('k-total').textContent = state.stars;
+  $('k-real').textContent = 'Vale ' + R$(state.stars * TAXA) + ' na cotação de hoje (1 ⭐ = R$ 0,50, definida pelos pais)';
+  const pct = Math.min(100, Math.round(state.stars / goal.cost * 100));
+  const left = Math.max(0, goal.cost - state.stars);
   $('k-goal-left').textContent = pct + '%';
   $('k-goal-bar').style.width = pct + '%';
-  $('k-goal-bar2').style.width = pct + '%';
-  $('k-goal-note').textContent = left > 0 ? 'Faltam ' + left + ' ⭐ · no seu ritmo, ~' + Math.ceil(left / 12) + ' dias 💪' : 'META ATINGIDA! 🎉 Mostre para o papai!';
-  $('k-goal2').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ guardadas';
+  $('k-goal-note').textContent = left > 0 ? 'Faltam ' + left + ' ⭐ · no seu ritmo, ~' + Math.ceil(left / 12) + ' dias 💪' : 'VOCÊ JÁ PODE TROCAR! 🎉 Vá até Metas.';
+  $('k-pix-btn').textContent = state.stars > 0 ? 'Pedir troca de ' + state.stars + ' ⭐ por Pix (≈' + R$(state.stars * TAXA) + ')' : 'Sem saldo para trocar ainda';
+  $('k-pix-btn').disabled = state.stars <= 0;
 
   /* kid trail — cada tarefa "a fazer" tem seu botão Entregar à direita */
   $('k-trail').innerHTML = state.missions.map(m => {
@@ -684,12 +668,15 @@ function render(){
       '</div><div class="meta">' + meta + '</div></div>' + right + '</div>';
   }).join('');
 
-  /* kid loja + voucher + ledger */
-  $('k-loja').innerHTML = state.loja.map((l, i) =>
-    '<div class="card row"><div class="dot">' + l.icon + '</div><div class="grow"><div style="font-weight:800;font-size:.85rem">' + l.name +
-    '</div><div class="num" style="font-size:.72rem;color:var(--sub)">' + l.cost + ' ⭐</div></div>' +
-    '<button class="btn soft" onclick="resgatar(state.loja[' + i + '])">Resgatar</button></div>'
-  ).join('');
+  /* kid loja (catálogo de trocas) + voucher + ledger */
+  $('k-loja').innerHTML = state.loja.map((l, i) => {
+    const pode = state.stars >= l.cost;
+    const btn = pode
+      ? '<button class="btn soft" onclick="trocar(state.loja[' + i + '])">Trocar</button>'
+      : '<button class="btn ghost" disabled>Faltam ' + (l.cost - state.stars) + ' ⭐</button>';
+    return '<div class="card row"><div class="dot">' + l.icon + '</div><div class="grow"><div style="font-weight:800;font-size:.85rem">' +
+      (l.meta ? '🎯 ' : '') + l.name + '</div><div class="num" style="font-size:.72rem;color:var(--sub)">' + l.cost + ' ⭐</div></div>' + btn + '</div>';
+  }).join('');
   $('k-voucher-slot').innerHTML = state.voucher ?
     '<div class="voucher row"><span style="font-size:1.4rem">' + state.voucher.icon + '</span><div class="grow">' +
     '<b style="font-size:.84rem">🎟️ Voucher: ' + state.voucher.name + '</b>' +
@@ -713,12 +700,12 @@ function render(){
     '<button class="btn ghost" onclick="devolver(' + m.id + ')">↩️</button></div></div>'
   ).join('') : '<div class="empty">Fila zerada ✨ Sem aprovação pendente — entregas não avaliadas em 24 h são aprovadas com ⭐⭐ automaticamente.</div>';
 
-  const resg = state.resgates.filter(r => r.st === 'pending');
-  $('p-resgates').innerHTML = resg.length ? resg.map(r =>
+  const resg = state.trocas.filter(r => r.st === 'pending');
+  $('p-trocas').innerHTML = resg.length ? resg.map(r =>
     '<div class="card row"><div class="dot">' + r.icon + '</div><div class="grow"><b style="font-size:.84rem">' + r.name +
-    '</b><div class="num" style="font-size:.72rem;color:var(--sub)">Léo · custa ' + r.cost + ' ⭐</div></div>' +
-    '<button class="btn primary" onclick="approveResgate(' + r.id + ')">Aprovar 🎟️</button></div>'
-  ).join('') : '<div class="empty">Nenhum resgate pendente.</div>';
+    '</b><div class="num" style="font-size:.72rem;color:var(--sub)">Léo · custa ' + r.cost + ' ⭐' + (r.pix ? ' · pagar via Pix' : '') + '</div></div>' +
+    '<button class="btn primary" onclick="aprovarTroca(' + r.id + ')">Aprovar 🎟️</button></div>'
+  ).join('') : '<div class="empty">Nenhuma troca pendente.</div>';
 
   const done = state.missions.filter(m => m.st === 'approved').length;
   $('p-leo-pulse').textContent = done + '/' + state.missions.length + ' missões · 🔥' + state.streak;
@@ -730,12 +717,10 @@ function render(){
     '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
     '</div><div class="meta">' + m.period + ' · ' + m.stars + ' ⭐' + (m.flash ? ' · ⚡ relâmpago' : '') + '</div></div>' + missionChip(m) + '</div>'
   ).join('');
-  $('p-total').textContent = state.stars + state.reserved;
-  $('p-total-real').textContent = '≈ ' + R$((state.stars + state.reserved) * TAXA);
-  $('p-livre').textContent = state.stars;
-  $('p-res').textContent = state.reserved;
+  $('p-total').textContent = state.stars;
+  $('p-total-real').textContent = '≈ ' + R$(state.stars * TAXA);
   $('p-next-pay').textContent = R$(state.stars * TAXA);
-  $('p-goal').textContent = state.reserved + ' / ' + state.goal.price + ' ⭐ · você precificou em R$ 160';
+  $('p-goal').textContent = state.stars + ' / ' + goal.cost + ' ⭐ · você precificou em R$ ' + (goal.cost * TAXA).toFixed(0);
   $('p-goal-bar').style.width = pct + '%';
 }
 
