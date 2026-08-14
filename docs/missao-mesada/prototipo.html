@@ -178,7 +178,7 @@
     position:absolute; left:50%; bottom:104px; transform:translate(-50%,16px);
     background:#262040; color:#fff; font-size:.78rem; font-weight:700;
     padding:9px 16px; border-radius:999px; opacity:0; pointer-events:none;
-    transition:.25s ease; z-index:70; white-space:nowrap; max-width:90%;
+    transition:.25s ease; z-index:95; white-space:nowrap; max-width:90%;
     overflow:hidden; text-overflow:ellipsis;
   }
   .toast.show{opacity:1; transform:translate(-50%,0)}
@@ -193,6 +193,76 @@
   }
   .sheet h3{font-size:1rem; font-weight:800; margin-bottom:12px}
   .grab{width:40px; height:4px; border-radius:99px; background:var(--line); margin:0 auto 12px}
+
+  /* cadastro de missão — tela cheia */
+  .fullscreen{
+    position:absolute; inset:0; z-index:75; background:var(--bg); color:var(--ink);
+    display:none; flex-direction:column;
+  }
+  .fullscreen.on{display:flex}
+  .fs-topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:16px 14px; flex:none;
+  }
+  .fs-topbar .x{border:0; background:none; color:var(--sub); font-size:1.15rem; cursor:pointer; width:32px; height:32px}
+  .fs-topbar .x:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:8px}
+  .fs-topbar h3{font-size:.95rem; font-weight:800}
+  .fs-topbar .add{border:0; background:none; color:var(--brand); font-weight:800; font-size:.86rem; cursor:pointer; padding:4px}
+  .fs-topbar .add:disabled{color:var(--sub); opacity:.55; cursor:default}
+  .fs-body{flex:1; overflow-y:auto; padding:4px 16px 30px}
+
+  .icon-pick{
+    width:82px; height:82px; border-radius:50%; margin:6px auto 20px; position:relative;
+    display:flex; align-items:center; justify-content:center; font-size:2.1rem;
+    background:var(--brand-soft); cursor:pointer; border:0;
+  }
+  .icon-pick .edit{
+    position:absolute; right:-2px; bottom:-2px; width:26px; height:26px; border-radius:50%;
+    background:var(--ok); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:.72rem; border:2px solid var(--bg);
+  }
+
+  .field-card{background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden}
+  .field-row{padding:13px 14px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px}
+  .field-row:last-child{border-bottom:0}
+  .field-row.between{justify-content:space-between; font-size:.85rem; font-weight:700}
+  .field-row input[type="text"], .field-row input[type="time"]{
+    border:0; background:none; font:inherit; color:var(--ink); flex:1; outline:0; font-size:.86rem; min-width:0;
+  }
+  .field-row input::placeholder{color:var(--sub)}
+  .field-link{
+    background:none; border:0; color:var(--brand); font-weight:800; font-size:.74rem;
+    display:flex; align-items:center; gap:4px; cursor:pointer; flex:none; white-space:nowrap;
+  }
+  .field-row select{
+    border:0; background:none; font:inherit; color:var(--sub); font-weight:700;
+    font-size:.82rem; text-align:right; cursor:pointer;
+  }
+  .field-hint{font-size:.72rem; color:var(--sub); padding:8px 4px 0}
+
+  .stepper{display:flex; align-items:center; gap:8px}
+  .stepper button{
+    width:44px; height:44px; border-radius:12px; border:1px solid var(--line); cursor:pointer;
+    font-size:1.2rem; font-weight:800; background:var(--card); color:var(--ink);
+  }
+  .stepper button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+  .stepper .val{
+    flex:1; height:44px; border-radius:12px; background:var(--card); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:1rem;
+  }
+
+  .toggle{position:relative; width:44px; height:26px; flex:none; cursor:pointer}
+  .toggle input{position:absolute; inset:0; opacity:0; margin:0; cursor:pointer}
+  .toggle .track{
+    position:absolute; inset:0; border-radius:999px; background:var(--line); transition:.15s;
+  }
+  .toggle .thumb{
+    position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3); transition:.15s;
+  }
+  .toggle input:checked ~ .track{background:var(--brand)}
+  .toggle input:checked ~ .track .thumb{transform:translateX(18px)}
+  .toggle input:focus-visible ~ .track{outline:2px solid var(--brand); outline-offset:2px}
 
   /* kid specifics */
   .kid-hero{
@@ -430,7 +500,7 @@
         </section>
       </div>
 
-      <button class="fab" aria-label="Cadastrar missão" onclick="openSheet('sh-create')">＋</button>
+      <button class="fab" aria-label="Cadastrar missão" onclick="abrirNovaMissao()">＋</button>
 
       <nav class="tabbar four" aria-label="Navegação dos pais">
         <button class="on" data-k="p-painel" onclick="parTab(this)"><span class="ti">📋</span>Painel</button>
@@ -440,16 +510,90 @@
       </nav>
     </div>
 
+    <!-- ================= CADASTRO DE MISSÃO (tela cheia) ================= -->
+    <div class="fullscreen" id="sh-newtask">
+      <div class="fs-topbar">
+        <button class="x" aria-label="Fechar" onclick="closeFull('sh-newtask')">✕</button>
+        <h3>Nova missão</h3>
+        <button class="add" id="nt-add" disabled onclick="salvarNovaMissao()">Adicionar</button>
+      </div>
+      <div class="fs-body">
+        <button class="icon-pick" aria-label="Trocar ícone" onclick="cicleIcon()">
+          <span id="nt-icon">🧺</span><span class="edit">✏️</span>
+        </button>
+
+        <div class="field-card">
+          <div class="field-row">
+            <input type="text" id="nt-name" placeholder="Nome da missão" oninput="checkNewTaskValid()">
+            <button class="field-link" onclick="openSheet('sh-preset')">🔍 Usar predefinição</button>
+          </div>
+          <div class="field-row">
+            <input type="text" id="nt-notes" placeholder="Anotações (opcional)">
+          </div>
+        </div>
+
+        <h2 class="sec">Estrelas por conclusão</h2>
+        <div class="stepper">
+          <button aria-label="Diminuir" onclick="stepStars(-1)">−</button>
+          <div class="val num"><span id="nt-stars">5</span> ⭐</div>
+          <button aria-label="Aumentar" onclick="stepStars(1)">＋</button>
+        </div>
+
+        <h2 class="sec">Quando</h2>
+        <div class="field-card">
+          <div class="field-row between">
+            <span>Data de início</span>
+            <select id="nt-start"><option>Hoje</option><option>Amanhã</option></select>
+          </div>
+          <div class="field-row between">
+            <span>Repetir</span>
+            <select id="nt-repeat">
+              <option>Todos os dias</option>
+              <option>Dias úteis</option>
+              <option>Fins de semana</option>
+              <option>Uma vez</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-card" style="margin-top:16px">
+          <div class="field-row between">
+            <span>Período do dia</span>
+            <select id="nt-period">
+              <option>A qualquer momento</option>
+              <option>Manhã</option>
+              <option>Tarde</option>
+              <option>Noite</option>
+            </select>
+          </div>
+          <div class="field-row between">
+            <span>Hora</span>
+            <label class="toggle"><input type="checkbox" id="nt-hour-toggle" onchange="toggleHour()"><span class="track"><span class="thumb"></span></span></label>
+          </div>
+          <div class="field-row" id="nt-hour-row" style="display:none">
+            <input type="time" id="nt-hour" value="19:00">
+          </div>
+        </div>
+        <div class="field-hint">Defina um horário para lembrar Léo de quando concluir</div>
+
+        <div class="field-card" style="margin-top:16px">
+          <div class="field-row between">
+            <span>Comprovante fotográfico</span>
+            <label class="toggle"><input type="checkbox" id="nt-foto"><span class="track"><span class="thumb"></span></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ================= SHEETS ================= -->
-    <div class="sheet-veil" id="sh-create" onclick="if(event.target===this)closeSheets()">
+    <div class="sheet-veil" id="sh-preset" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
-        <h3>Nova missão para o Léo — 20 segundos ⏱️</h3>
+        <h3>Usar predefinição</h3>
         <div class="stack">
-          <button class="btn soft tpl" onclick="criar('🧸 Guardar os brinquedos',5)">🧸 Guardar os brinquedos · <b>5 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 6+)</span></button>
-          <button class="btn soft tpl" onclick="criar('🐕 Passear com o Thor',8)">🐕 Passear com o Thor · <b>8 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 10+)</span></button>
-          <button class="btn soft tpl" onclick="criar('🍽️ Lavar a louça do jantar',10)">🍽️ Lavar a louça do jantar · <b>10 ⭐</b></button>
-          <button class="btn ghost tpl" onclick="criar('🎤 Regar as plantas',6)">🎤 Ditar por voz: “Léo, regar as plantas, 6 estrelas” → o app monta a missão</button>
+          <button class="btn soft tpl" onclick="usarPredefinicao('Guardar os brinquedos','🧸',5)">🧸 Guardar os brinquedos · <b>5 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 6+)</span></button>
+          <button class="btn soft tpl" onclick="usarPredefinicao('Passear com o Thor','🐕',8)">🐕 Passear com o Thor · <b>8 ⭐</b> <span style="font-weight:400; color:var(--sub)">(modelo 10+)</span></button>
+          <button class="btn soft tpl" onclick="usarPredefinicao('Lavar a louça do jantar','🍽️',10)">🍽️ Lavar a louça do jantar · <b>10 ⭐</b></button>
         </div>
       </div>
     </div>
@@ -660,14 +804,74 @@ function bonus(){
   toast('parent', '🎁 +5 ⭐ enviadas com uma mensagem para o Léo');
   render();
 }
-function criar(nome, stars){
+/* ---------------- cadastro de missão (tela cheia) ---------------- */
+const NT_ICONS = ['🧺', '🛏️', '🐕', '📚', '🗑️', '🍽️', '🌱', '🚗', '🧸'];
+let ntIconIdx = 0;
+
+function openFull(id){ $(id).classList.add('on'); }
+function closeFull(id){ $(id).classList.remove('on'); }
+
+function abrirNovaMissao(){
+  ntIconIdx = 0;
+  $('nt-icon').textContent = NT_ICONS[0];
+  $('nt-name').value = '';
+  $('nt-notes').value = '';
+  $('nt-stars').textContent = '5';
+  $('nt-start').value = 'Hoje';
+  $('nt-repeat').value = 'Todos os dias';
+  $('nt-period').value = 'A qualquer momento';
+  $('nt-hour-toggle').checked = false;
+  $('nt-hour').value = '19:00';
+  $('nt-hour-row').style.display = 'none';
+  $('nt-foto').checked = false;
+  checkNewTaskValid();
+  openFull('sh-newtask');
+}
+function cicleIcon(){
+  ntIconIdx = (ntIconIdx + 1) % NT_ICONS.length;
+  $('nt-icon').textContent = NT_ICONS[ntIconIdx];
+}
+function checkNewTaskValid(){
+  $('nt-add').disabled = !$('nt-name').value.trim();
+}
+function stepStars(delta){
+  const v = Math.max(1, Math.min(50, parseInt($('nt-stars').textContent, 10) + delta));
+  $('nt-stars').textContent = v;
+}
+function toggleHour(){
+  $('nt-hour-row').style.display = $('nt-hour-toggle').checked ? 'flex' : 'none';
+}
+function usarPredefinicao(nome, icon, stars){
+  $('nt-name').value = nome;
+  $('nt-icon').textContent = icon;
+  $('nt-stars').textContent = stars;
+  checkNewTaskValid();
   closeSheets();
-  const icon = nome.split(' ')[0];
-  const name = nome.slice(icon.length + 1);
+  toast('parent', 'Predefinição aplicada — ajuste o que quiser antes de adicionar');
+}
+function salvarNovaMissao(){
+  const name = $('nt-name').value.trim();
+  if (!name) return;
+  const icon = $('nt-icon').textContent;
+  const stars = parseInt($('nt-stars').textContent, 10);
+  const start = $('nt-start').value;
+  const repeat = $('nt-repeat').value;
+  const period = $('nt-period').value;
+  const temHora = $('nt-hour-toggle').checked;
+  const hora = temHora ? $('nt-hour').value : null;
+  const foto = $('nt-foto').checked;
+  const notes = $('nt-notes').value.trim();
+
+  const freq = repeat + (temHora ? ' · ' + hora : (period !== 'A qualquer momento' ? ' · ' + period : ''));
   const id = state.nextId++;
-  state.missions.push({ id, name, icon, period: 'Tarde', stars, st: 'todo' });
-  state.templates.push({ id, name, icon, freq: 'Diária · tarde', stars });
-  toast('parent', 'Tarefa publicada no app do Léo em ' + (Math.floor(Math.random() * 9) + 8) + ' segundos ✓');
+
+  state.templates.push({ id, name, icon, freq, stars, foto, notes });
+  if (start === 'Hoje') {
+    state.missions.push({ id, name, icon, period: period === 'A qualquer momento' ? 'Dia todo' : period, stars, st: 'todo', foto });
+  }
+
+  closeFull('sh-newtask');
+  toast('parent', 'Missão "' + name + '" cadastrada' + (start === 'Hoje' ? ' e publicada para o Léo ✓' : ' — começa ' + start.toLowerCase()));
   render();
 }
 function flash(nome, stars){
@@ -782,6 +986,6 @@ function render(){
   $('p-goal-bar').style.width = pct + '%';
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheets(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheets(); closeFull('sh-newtask'); } });
 render();
 </script>
