@@ -329,7 +329,7 @@
             <div class="m">🥇<span>1ª missão</span></div>
             <div class="m">🔥<span>7 dias</span></div>
             <div class="m">🎯<span>1ª meta</span></div>
-            <div class="m">🎓<span>Hábito: cama</span></div>
+            <div class="m">🐕<span>Cuidador</span></div>
             <div class="m off">🏆<span>100 missões</span></div>
             <div class="m off">🔥<span>30 dias</span></div>
             <div class="m off">💰<span>10 trocas</span></div>
@@ -378,16 +378,8 @@
 
         <!-- MISSOES (pais) -->
         <section class="scr" id="p-missoes">
-          <h2 class="sec">Semana do Léo</h2>
-          <div class="card">
-            <div id="p-week"></div>
-          </div>
-          <h2 class="sec">Modelos da família</h2>
-          <div class="card stack" style="font-size:.82rem">
-            <div class="row"><div class="dot">🛏️</div><div class="grow"><b>Arrumar a cama</b><div style="font-size:.72rem;color:var(--sub)">Diária · 5 ⭐ · 🎓 sugerido aposentar (28 dias seguidos!)</div></div><button class="btn ghost" onclick="toast('parent','Missão graduada! Léo ganhou a medalha 🎓')">🎓</button></div>
-            <div class="row"><div class="dot">🗑️</div><div class="grow"><b>Tirar o lixo</b><div style="font-size:.72rem;color:var(--sub)">Seg–Sex, 19h · 5 ⭐ · exige foto</div></div></div>
-            <div class="row"><div class="dot">📚</div><div class="grow"><b>Lição de casa</b><div style="font-size:.72rem;color:var(--sub)">Diária · 10 ⭐</div></div></div>
-          </div>
+          <h2 class="sec">Missões cadastradas</h2>
+          <div class="card stack" id="p-all-missions" style="font-size:.82rem"></div>
         </section>
 
         <!-- FINANCEIRO -->
@@ -517,6 +509,13 @@ const state = {
     { id: 2, name: 'Lição de casa', icon: '📚', period: 'Tarde', stars: 10, st: 'todo' },
     { id: 3, name: 'Tirar o lixo', icon: '🗑️', period: 'Noite', stars: 5, st: 'todo', foto: true },
     { id: 4, name: 'Ração do Thor', icon: '🐕', period: 'Noite', stars: 4, st: 'delivered' },
+  ],
+  /* todas as missões cadastradas pela família (base para a aba Missões dos pais) */
+  templates: [
+    { id: 1, name: 'Arrumar a cama', icon: '🛏️', freq: 'Diária · manhã', stars: 5 },
+    { id: 2, name: 'Lição de casa', icon: '📚', freq: 'Diária · tarde', stars: 10 },
+    { id: 3, name: 'Tirar o lixo', icon: '🗑️', freq: 'Seg–Sex · 19h', stars: 5, foto: true },
+    { id: 4, name: 'Ração do Thor', icon: '🐕', freq: 'Diária · noite', stars: 4 },
   ],
   /* catálogo único de trocas — a meta (skate) é só o item mais caro da lista */
   loja: [
@@ -664,7 +663,10 @@ function bonus(){
 function criar(nome, stars){
   closeSheets();
   const icon = nome.split(' ')[0];
-  state.missions.push({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Tarde', stars, st: 'todo' });
+  const name = nome.slice(icon.length + 1);
+  const id = state.nextId++;
+  state.missions.push({ id, name, icon, period: 'Tarde', stars, st: 'todo' });
+  state.templates.push({ id, name, icon, freq: 'Diária · tarde', stars });
   toast('parent', 'Tarefa publicada no app do Léo em ' + (Math.floor(Math.random() * 9) + 8) + ' segundos ✓');
   render();
 }
@@ -766,11 +768,13 @@ function render(){
   $('p-sub').textContent = pend ? pend + ' decisão(ões) esperando você — 60 segundos' : 'Tudo em dia ✨';
   $('p-bell-dot').style.display = pend ? 'block' : 'none';
 
-  /* parent missões/financeiro */
-  $('p-week').innerHTML = state.missions.map(m =>
-    '<div class="mrow"><div class="dot">' + m.icon + '</div><div class="grow"><div class="name">' + m.name +
-    '</div><div class="meta">' + m.period + ' · ' + m.stars + ' ⭐' + (m.flash ? ' · ⚡ relâmpago' : '') + '</div></div>' + missionChip(m) + '</div>'
+  /* parent missões: todas as missões cadastradas pela família */
+  $('p-all-missions').innerHTML = state.templates.map(t =>
+    '<div class="row"><div class="dot">' + t.icon + '</div><div class="grow"><b>' + t.name + '</b>' +
+    '<div style="font-size:.72rem;color:var(--sub)">' + t.freq + ' · ' + t.stars + ' ⭐' + (t.foto ? ' · exige foto' : '') + '</div></div></div>'
   ).join('');
+
+  /* parent financeiro */
   $('p-total').textContent = state.stars;
   $('p-total-real').textContent = '≈ ' + R$(state.stars * TAXA);
   $('p-next-pay').textContent = R$(state.stars * TAXA);
