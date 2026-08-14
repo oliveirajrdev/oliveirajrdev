@@ -95,13 +95,6 @@
   .tabbar button .ti{font-size:1.25rem; line-height:1; filter:grayscale(1); opacity:.55}
   .tabbar button.on{color:var(--brand)}
   .tabbar button.on .ti{filter:none; opacity:1}
-  .cta{
-    width:60px; height:60px; border-radius:50%; border:0; cursor:pointer;
-    background:var(--brand); color:#fff; font-size:1.5rem;
-    margin:0 auto -6px; box-shadow:0 8px 18px rgba(0,0,0,.22);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .cta small{position:absolute; bottom:-16px; font-size:.58rem; font-weight:700; color:var(--sub)}
   .fab{
     position:absolute; right:16px; bottom:78px; z-index:55;
     width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
@@ -123,6 +116,8 @@
   .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px}
   .stack{display:flex; flex-direction:column; gap:10px}
   .row{display:flex; align-items:center; gap:10px}
+  .rowbtn{width:100%; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-appearance:none; appearance:none}
+  .rowbtn:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:8px}
   .grow{flex:1; min-width:0}
   .num{font-variant-numeric:tabular-nums}
   .chip{
@@ -239,6 +234,7 @@
     background:none; border:0; color:var(--brand); font-weight:800; font-size:.74rem;
     display:flex; align-items:center; gap:4px; cursor:pointer; flex:none; white-space:nowrap;
   }
+  .field-link:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:6px}
   .field-row select{
     border:0; background:none; font:inherit; color:var(--sub); font-weight:700;
     font-size:.82rem; text-align:right; cursor:pointer;
@@ -287,16 +283,6 @@
   .stars-btns .btn{flex:1; padding:9px 4px; font-size:.78rem}
 
   /* parent specifics */
-  .pulse{display:flex; gap:10px}
-  .pulse .p{
-    flex:1; background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:12px; text-align:center;
-  }
-  .pulse .p b{display:block; font-size:.85rem; margin-top:6px}
-  .pulse .p span{font-size:.7rem; color:var(--sub)}
-  .quick{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
-  .quick .btn{display:flex; flex-direction:column; gap:4px; align-items:center; padding:12px 6px; font-size:.72rem}
-  .quick .btn em{font-style:normal; font-size:1.2rem}
   .photo{
     height:104px; border-radius:12px; background:var(--brand-soft);
     display:flex; align-items:center; justify-content:center; font-size:2rem; margin:10px 0;
@@ -497,7 +483,7 @@
               <div class="grow"><b style="font-size:.85rem">Skate novo</b>
                 <div class="num" style="font-size:.72rem; color:var(--sub)" id="p-goal"></div>
               </div>
-              <button class="btn ghost" style="padding:8px 10px" id="p-goal-edit">✏️</button>
+              <button class="btn ghost" style="padding:8px 10px" id="p-goal-edit" aria-label="Editar meta">✏️</button>
             </div>
             <div class="bar" style="margin-top:10px"><i id="p-goal-bar"></i></div>
             <div style="font-size:.7rem; color:var(--sub); margin-top:8px">Preço definido por você. Ao juntar estrelas suficientes, Léo troca direto no app dele.</div>
@@ -508,35 +494,35 @@
         <section class="scr" id="p-familia">
           <h2 class="sec">Filhos</h2>
           <div class="card stack" id="p-filhos"></div>
-          <button class="row" style="width:100%; background:none; border:0; cursor:pointer; padding:12px 4px" onclick="abrirAddFilho()">
+          <button class="row rowbtn" style="padding:12px 4px" onclick="abrirAddFilho()">
             <div class="dot" style="font-size:1.2rem; color:var(--brand)">＋</div>
-            <div class="grow" style="text-align:left"><b style="font-size:.85rem">Adicionar filho</b></div>
+            <div class="grow"><b style="font-size:.85rem">Adicionar filho</b></div>
           </button>
 
           <h2 class="sec">Conta</h2>
           <div class="card stack" style="font-size:.84rem">
             <div class="row"><div class="dot">👤</div><div class="grow"><b>Perfil</b><div style="font-size:.72rem;color:var(--sub)">oliveirajrdev@gmail.com</div></div></div>
             <div class="row"><div class="dot">🎁</div><div class="grow"><b>Assinatura</b></div><span class="chip" style="background:var(--brand-soft);color:var(--brand)">Grátis</span></div>
-            <div class="row" style="cursor:pointer" onclick="toast('parent','Em breve: comparativo de planos Premium ✨')"><div class="dot">✨</div><div class="grow"><b style="color:var(--brand)">Mudar para Premium</b></div></div>
+            <button class="row rowbtn" onclick="toast('parent','Em breve: comparativo de planos Premium ✨')"><div class="dot">✨</div><div class="grow"><b style="color:var(--brand)">Mudar para Premium</b></div></button>
           </div>
 
           <h2 class="sec">Controle de acesso</h2>
           <div class="card stack" id="p-acesso"></div>
-          <button class="row" style="width:100%; background:none; border:0; cursor:pointer; padding:12px 4px" onclick="convidarResponsavel()">
+          <button class="row rowbtn" style="padding:12px 4px" onclick="convidarResponsavel()">
             <div class="dot" style="font-size:1.2rem; color:var(--brand)">＋</div>
-            <div class="grow" style="text-align:left"><b style="font-size:.85rem">Convidar responsável</b></div>
+            <div class="grow"><b style="font-size:.85rem">Convidar responsável</b></div>
           </button>
 
           <h2 class="sec">Informações</h2>
           <div class="card stack" style="font-size:.84rem">
-            <div class="row" style="cursor:pointer" onclick="toast('parent','Abriria os Termos e condições')"><div class="dot">📄</div><div class="grow"><b>Termos e condições</b></div></div>
-            <div class="row" style="cursor:pointer" onclick="toast('parent','Abriria a Política de privacidade')"><div class="dot">🛡️</div><div class="grow"><b>Política de privacidade</b></div></div>
-            <div class="row" style="cursor:pointer" onclick="toast('parent','contato@missaomesada.com.br')"><div class="dot">✉️</div><div class="grow"><b>Fale conosco</b><div style="font-size:.72rem;color:var(--sub)">contato@missaomesada.com.br</div></div></div>
+            <button class="row rowbtn" onclick="toast('parent','Abriria os Termos e condições')"><div class="dot">📄</div><div class="grow"><b>Termos e condições</b></div></button>
+            <button class="row rowbtn" onclick="toast('parent','Abriria a Política de privacidade')"><div class="dot">🛡️</div><div class="grow"><b>Política de privacidade</b></div></button>
+            <button class="row rowbtn" onclick="toast('parent','contato@missaomesada.com.br')"><div class="dot">✉️</div><div class="grow"><b>Fale conosco</b><div style="font-size:.72rem;color:var(--sub)">contato@missaomesada.com.br</div></div></button>
           </div>
 
           <div class="card stack" style="font-size:.84rem; margin-top:16px">
-            <div class="row" style="cursor:pointer" onclick="confirmAction('Sair da conta','Você vai precisar entrar de novo para gerenciar a família.','Sair', sairAction)"><div class="dot">↪️</div><div class="grow"><b>Sair</b></div></div>
-            <div class="row" style="cursor:pointer" onclick="confirmAction('Excluir conta','Remove todas as missões, saldos e histórico da família. Essa ação não pode ser desfeita.','Excluir conta', excluirContaAction)"><div class="dot" style="background:var(--danger-soft); color:var(--danger)">🗑️</div><div class="grow"><b style="color:var(--danger)">Excluir conta</b></div></div>
+            <button class="row rowbtn" onclick="confirmAction('Sair da conta','Você vai precisar entrar de novo para gerenciar a família.','Sair', sairAction)"><div class="dot">↪️</div><div class="grow"><b>Sair</b></div></button>
+            <button class="row rowbtn" onclick="confirmAction('Excluir conta','Remove todas as missões, saldos e histórico da família. Essa ação não pode ser desfeita.','Excluir conta', excluirContaAction)"><div class="dot" style="background:var(--danger-soft); color:var(--danger)">🗑️</div><div class="grow"><b style="color:var(--danger)">Excluir conta</b></div></button>
           </div>
           <div style="text-align:center; font-size:.7rem; color:var(--sub); margin-top:14px">Versão 1.0.0</div>
         </section>
@@ -610,7 +596,7 @@
           </div>
           <div class="field-row between">
             <span>Hora</span>
-            <label class="toggle"><input type="checkbox" id="nt-hour-toggle" onchange="toggleHour()"><span class="track"><span class="thumb"></span></span></label>
+            <label class="toggle"><input type="checkbox" id="nt-hour-toggle" aria-label="Definir horário específico" onchange="toggleHour()"><span class="track"><span class="thumb"></span></span></label>
           </div>
           <div class="field-row" id="nt-hour-row" style="display:none">
             <input type="time" id="nt-hour" value="19:00">
@@ -621,7 +607,7 @@
         <div class="field-card" style="margin-top:16px">
           <div class="field-row between">
             <span>Comprovante fotográfico</span>
-            <label class="toggle"><input type="checkbox" id="nt-foto"><span class="track"><span class="thumb"></span></span></label>
+            <label class="toggle"><input type="checkbox" id="nt-foto" aria-label="Exigir comprovante fotográfico"><span class="track"><span class="thumb"></span></span></label>
           </div>
         </div>
       </div>
@@ -922,7 +908,7 @@ function openReject(id){
 }
 function aprovarTroca(id){
   const r = state.trocas.find(x => x.id === id);
-  r.st = 'ok'; state.stars -= r.cost;
+  r.st = 'ok'; state.stars = Math.max(0, state.stars - r.cost);
   if (r.pix) {
     pushLedger('Troca por Pix (a pagar no dia 5)', -r.cost);
     toast('parent', 'Troca por Pix aprovada → pagamento no dia da mesada 💸');
@@ -1306,7 +1292,7 @@ function render(){
   $('p-fila').innerHTML = fila.length ? fila.map(m =>
     '<div class="card row"><div class="dot">' + m.icon + '</div><div class="grow">' +
     '<b style="font-size:.84rem">' + m.name + '</b><div style="font-size:.7rem;color:var(--sub)">Léo · vale ' + m.stars + ' ⭐</div></div>' +
-    '<button class="btn ghost" style="padding:8px 10px" onclick="openReject(' + m.id + ')">↩️</button>' +
+    '<button class="btn ghost" style="padding:8px 10px" aria-label="Devolver tarefa" onclick="openReject(' + m.id + ')">↩️</button>' +
     '<button class="btn primary" style="padding:8px 12px" onclick="openApprove(' + m.id + ')">✓ Aprovar</button></div>'
   ).join('') : '<div class="empty">Fila zerada ✨ Sem aprovação pendente — entregas não avaliadas em 24 h são aprovadas com ⭐⭐ automaticamente.</div>';
 
@@ -1321,7 +1307,7 @@ function render(){
   $('p-sugestoes').innerHTML = sugPendentes.length ? sugPendentes.map(s =>
     '<div class="card row"><div class="dot">💡</div><div class="grow"><b style="font-size:.84rem">' + s.name +
     '</b><div style="font-size:.72rem;color:var(--sub)">Sugestão do ' + s.by + '</div></div>' +
-    '<button class="btn ghost" style="padding:8px 10px" onclick="recusarSugestao(' + s.id + ')">✕</button>' +
+    '<button class="btn ghost" style="padding:8px 10px" aria-label="Recusar sugestão" onclick="recusarSugestao(' + s.id + ')">✕</button>' +
     '<button class="btn primary" style="padding:8px 10px" onclick="abrirPrecificar(' + s.id + ')">💲 Precificar</button></div>'
   ).join('') : '<div class="empty">Nenhuma sugestão por enquanto.</div>';
 
@@ -1329,7 +1315,7 @@ function render(){
     const i = state.loja.indexOf(l);
     return '<div class="row"><div class="dot">' + l.icon + '</div><div class="grow"><b style="font-size:.85rem">' + l.name +
       '</b><div class="num" style="font-size:.72rem;color:var(--sub)">' + l.cost + ' ⭐</div></div>' +
-      '<button class="btn ghost" style="padding:8px 10px" onclick="abrirEditarRecompensa(' + i + ')">✏️</button></div>';
+      '<button class="btn ghost" style="padding:8px 10px" aria-label="Editar recompensa" onclick="abrirEditarRecompensa(' + i + ')">✏️</button></div>';
   }).join('');
 
   const pend = fila.length + resg.length + sugPendentes.length;
@@ -1368,7 +1354,7 @@ function render(){
     return '<div class="row"><div class="avatar">' + p.avatar + '</div><div class="grow"><b style="font-size:.86rem">' + p.name +
       '</b><div style="font-size:.72rem;color:var(--sub)">' + desc + '</div></div>' +
       '<span class="chip ' + chipClass + '">' + roleLabel + '</span>' +
-      '<button class="btn ghost" style="padding:8px 10px" onclick="abrirAcessoOpcoes(' + i + ')">⋯</button></div>';
+      '<button class="btn ghost" style="padding:8px 10px" aria-label="Mais opções de acesso" onclick="abrirAcessoOpcoes(' + i + ')">⋯</button></div>';
   }).join('');
 }
 
