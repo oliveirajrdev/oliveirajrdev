@@ -193,6 +193,11 @@
   }
   .sheet h3{font-size:1rem; font-weight:800; margin-bottom:12px}
   .grab{width:40px; height:4px; border-radius:99px; background:var(--line); margin:0 auto 12px}
+  .sheet input[type="text"]{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); font:inherit; font-size:.86rem; outline:0;
+  }
+  .sheet input[type="text"]::placeholder{color:var(--sub)}
 
   /* cadastro de missão — tela cheia */
   .fullscreen{
@@ -367,8 +372,12 @@
 
           <div id="k-voucher-slot" class="stack" style="margin-top:10px"></div>
 
-          <h2 class="sec">Trocar estrelas</h2>
+          <div class="row" style="justify-content:space-between; margin:18px 2px 8px">
+            <h2 class="sec" style="margin:0">Trocar estrelas</h2>
+            <button class="field-link" onclick="openSheet('sh-suggest')">💡 Sugerir</button>
+          </div>
           <div class="stack" id="k-loja"></div>
+          <div class="stack" id="k-sugestoes" style="margin-top:10px"></div>
 
           <div class="card" style="margin-top:10px">
             <div class="row">
@@ -459,6 +468,15 @@
             <div class="num" style="font-size:1.6rem; font-weight:800">⭐ <span id="p-total"></span> <span style="font-size:.85rem; font-weight:700; opacity:.85" id="p-total-real"></span></div>
           </div>
 
+          <h2 class="sec">Sugestões da criança</h2>
+          <div class="stack" id="p-sugestoes"></div>
+
+          <div class="row" style="justify-content:space-between; margin:18px 2px 8px">
+            <h2 class="sec" style="margin:0">Catálogo de recompensas</h2>
+            <button class="field-link" onclick="abrirNovaRecompensa()">＋ Nova</button>
+          </div>
+          <div class="card stack" id="p-catalogo"></div>
+
           <h2 class="sec">Regras da economia</h2>
           <div class="card stack" style="font-size:.82rem">
             <div class="row"><div class="grow"><b>Cotação da estrela</b><div style="font-size:.72rem;color:var(--sub)">1 ⭐ = R$ 0,50 · configurada aqui, por filho</div></div><button class="btn ghost" onclick="toast('parent','Simulador: nesse ritmo, Léo ganha ~R$ 46/mês')">Simular</button></div>
@@ -474,6 +492,7 @@
               <div class="grow"><b style="font-size:.85rem">Skate novo</b>
                 <div class="num" style="font-size:.72rem; color:var(--sub)" id="p-goal"></div>
               </div>
+              <button class="btn ghost" style="padding:8px 10px" id="p-goal-edit">✏️</button>
             </div>
             <div class="bar" style="margin-top:10px"><i id="p-goal-bar"></i></div>
             <div style="font-size:.7rem; color:var(--sub); margin-top:8px">Preço definido por você. Ao juntar estrelas suficientes, Léo troca direto no app dele.</div>
@@ -585,7 +604,48 @@
       </div>
     </div>
 
+    <!-- ================= CADASTRO/EDIÇÃO DE RECOMPENSA (tela cheia, pais) ================= -->
+    <div class="fullscreen" id="sh-reward">
+      <div class="fs-topbar">
+        <button class="x" aria-label="Fechar" onclick="closeFull('sh-reward')">✕</button>
+        <h3 id="rw-title">Nova recompensa</h3>
+        <button class="add" id="rw-save" disabled onclick="salvarRecompensa()">Salvar</button>
+      </div>
+      <div class="fs-body">
+        <button class="icon-pick" aria-label="Trocar ícone" onclick="cicleRewardIcon()">
+          <span id="rw-icon">🎮</span><span class="edit">✏️</span>
+        </button>
+
+        <div class="field-card">
+          <div class="field-row">
+            <input type="text" id="rw-name" placeholder="Nome da recompensa" oninput="checkRewardValid()">
+          </div>
+        </div>
+
+        <h2 class="sec">Custo em estrelas</h2>
+        <div class="stepper">
+          <button aria-label="Diminuir" onclick="stepRewardCost(-1)">−</button>
+          <div class="val num"><span id="rw-cost">10</span> ⭐</div>
+          <button aria-label="Aumentar" onclick="stepRewardCost(1)">＋</button>
+        </div>
+
+        <button class="btn danger" id="rw-remove" style="width:100%; margin-top:20px; display:none" onclick="removerRecompensa()">🗑️ Remover recompensa</button>
+      </div>
+    </div>
+
     <!-- ================= SHEETS ================= -->
+    <div class="sheet-veil" id="sh-suggest" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Sugerir recompensa</h3>
+        <div class="stack">
+          <input type="text" id="sg-name" placeholder="O que você quer trocar?">
+          <button class="btn primary" onclick="enviarSugestao()">Enviar para o papai</button>
+          <div style="font-size:.72rem; color:var(--sub)">O papai decide o preço em estrelas antes de aparecer na loja.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="sheet-veil" id="sh-preset" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
@@ -669,6 +729,8 @@ const state = {
     { name: 'R$ 10 no Pix', icon: '💸', cost: 20 },
   ],
   trocas: [{ id: 70, name: '30 min extras de videogame', icon: '🎮', cost: 15, st: 'pending' }],
+  /* recompensas sugeridas pela criança — o pai precifica e aprova antes de entrarem no catálogo */
+  sugestoes: [{ id: 90, name: 'Ir ao cinema no fim de semana', by: 'Léo', st: 'pending' }],
   ledger: [
     { d: 'Arrumar a cama · ⭐⭐⭐ caprichou! (+20%)', v: +6, t: 'hoje 07h40' },
     { d: 'Sequência de 7 dias · bônus', v: +5, t: 'ontem' },
@@ -874,6 +936,108 @@ function salvarNovaMissao(){
   toast('parent', 'Missão "' + name + '" cadastrada' + (start === 'Hoje' ? ' e publicada para o Léo ✓' : ' — começa ' + start.toLowerCase()));
   render();
 }
+
+/* ---------------- cadastro/edição de recompensa (pais) ---------------- */
+const RW_ICONS = ['🎮', '🍿', '💸', '🍦', '🎬', '⚽', '🎨', '📱', '🚲', '🛹'];
+let rwIconIdx = 0;
+let editingRewardIdx = null;
+let suggestionResolvingId = null;
+
+function abrirNovaRecompensa(){
+  editingRewardIdx = null;
+  suggestionResolvingId = null;
+  rwIconIdx = 0;
+  $('rw-title').textContent = 'Nova recompensa';
+  $('rw-icon').textContent = RW_ICONS[0];
+  $('rw-name').value = '';
+  $('rw-cost').textContent = '10';
+  $('rw-remove').style.display = 'none';
+  checkRewardValid();
+  openFull('sh-reward');
+}
+function abrirPrecificar(id){
+  const s = state.sugestoes.find(x => x.id === id);
+  editingRewardIdx = null;
+  suggestionResolvingId = id;
+  rwIconIdx = 0;
+  $('rw-title').textContent = 'Precificar sugestão';
+  $('rw-icon').textContent = RW_ICONS[0];
+  $('rw-name').value = s.name;
+  $('rw-cost').textContent = '10';
+  $('rw-remove').style.display = 'none';
+  checkRewardValid();
+  openFull('sh-reward');
+}
+function abrirEditarRecompensa(idx){
+  const item = state.loja[idx];
+  editingRewardIdx = idx;
+  suggestionResolvingId = null;
+  const found = RW_ICONS.indexOf(item.icon);
+  rwIconIdx = found >= 0 ? found : 0;
+  $('rw-title').textContent = 'Editar recompensa';
+  $('rw-icon').textContent = item.icon;
+  $('rw-name').value = item.name;
+  $('rw-cost').textContent = item.cost;
+  $('rw-remove').style.display = item.meta ? 'none' : 'block';
+  checkRewardValid();
+  openFull('sh-reward');
+}
+function recusarSugestao(id){
+  state.sugestoes = state.sugestoes.filter(s => s.id !== id);
+  toast('parent', 'Sugestão recusada.');
+  render();
+}
+function cicleRewardIcon(){
+  rwIconIdx = (rwIconIdx + 1) % RW_ICONS.length;
+  $('rw-icon').textContent = RW_ICONS[rwIconIdx];
+}
+function checkRewardValid(){
+  $('rw-save').disabled = !$('rw-name').value.trim();
+}
+function stepRewardCost(delta){
+  const v = Math.max(5, Math.min(500, parseInt($('rw-cost').textContent, 10) + delta * 5));
+  $('rw-cost').textContent = v;
+}
+function salvarRecompensa(){
+  const name = $('rw-name').value.trim();
+  if (!name) return;
+  const icon = $('rw-icon').textContent;
+  const cost = parseInt($('rw-cost').textContent, 10);
+
+  if (editingRewardIdx !== null) {
+    Object.assign(state.loja[editingRewardIdx], { name, icon, cost });
+    toast('parent', 'Recompensa atualizada ✓');
+  } else {
+    state.loja.push({ name, icon, cost });
+    if (suggestionResolvingId !== null) {
+      state.sugestoes = state.sugestoes.filter(s => s.id !== suggestionResolvingId);
+      toast('parent', 'Sugestão aprovada e precificada — já está na loja do Léo 🎉');
+    } else {
+      toast('parent', 'Recompensa adicionada à loja ✓');
+    }
+  }
+  closeFull('sh-reward');
+  render();
+}
+function removerRecompensa(){
+  if (editingRewardIdx === null) return;
+  state.loja.splice(editingRewardIdx, 1);
+  closeFull('sh-reward');
+  toast('parent', 'Recompensa removida da loja');
+  render();
+}
+
+/* ---------------- sugestão de recompensa (criança) ---------------- */
+function enviarSugestao(){
+  const name = $('sg-name').value.trim();
+  if (!name) return;
+  state.sugestoes.push({ id: state.nextId++, name, by: 'Léo', st: 'pending' });
+  $('sg-name').value = '';
+  closeSheets();
+  toast('kid', '💡 Sugestão enviada! O papai decide o preço.');
+  render();
+}
+
 function flash(nome, stars){
   closeSheets();
   const icon = nome.split(' ')[0];
@@ -947,6 +1111,11 @@ function render(){
     '<div class="voucher row"><span style="font-size:1.4rem">' + state.voucher.icon + '</span><div class="grow">' +
     '<b style="font-size:.84rem">🎟️ Voucher: ' + state.voucher.name + '</b>' +
     '<div style="font-size:.7rem;color:var(--sub)">Liberado por ' + state.voucher.by + ' · ' + state.voucher.at + ' · mostre esta tela para usar</div></div></div>' : '';
+  const minhasSugestoes = state.sugestoes.filter(s => s.by === 'Léo' && s.st === 'pending');
+  $('k-sugestoes').innerHTML = minhasSugestoes.map(s =>
+    '<div class="card row"><div class="dot">💡</div><div class="grow"><b style="font-size:.84rem">' + s.name +
+    '</b><div style="font-size:.72rem;color:var(--sub)">Aguardando o papai decidir o preço</div></div></div>'
+  ).join('');
   $('k-ledger').innerHTML = state.ledger.slice(0, 6).map(l =>
     '<li><div>' + l.d + '<small>' + l.t + '</small></div><span class="num ' + (l.neutral ? '' : l.v > 0 ? 'pos' : 'neg') + '">' +
     (l.v > 0 ? '+' : '') + l.v + ' ⭐</span></li>'
@@ -968,7 +1137,22 @@ function render(){
     '<button class="btn primary" onclick="aprovarTroca(' + r.id + ')">Aprovar 🎟️</button></div>'
   ).join('') : '<div class="empty">Nenhuma troca pendente.</div>';
 
-  const pend = fila.length + resg.length;
+  const sugPendentes = state.sugestoes.filter(s => s.st === 'pending');
+  $('p-sugestoes').innerHTML = sugPendentes.length ? sugPendentes.map(s =>
+    '<div class="card row"><div class="dot">💡</div><div class="grow"><b style="font-size:.84rem">' + s.name +
+    '</b><div style="font-size:.72rem;color:var(--sub)">Sugestão do ' + s.by + '</div></div>' +
+    '<button class="btn ghost" style="padding:8px 10px" onclick="recusarSugestao(' + s.id + ')">✕</button>' +
+    '<button class="btn primary" style="padding:8px 10px" onclick="abrirPrecificar(' + s.id + ')">💲 Precificar</button></div>'
+  ).join('') : '<div class="empty">Nenhuma sugestão por enquanto.</div>';
+
+  $('p-catalogo').innerHTML = state.loja.filter(l => !l.meta).map((l) => {
+    const i = state.loja.indexOf(l);
+    return '<div class="row"><div class="dot">' + l.icon + '</div><div class="grow"><b style="font-size:.85rem">' + l.name +
+      '</b><div class="num" style="font-size:.72rem;color:var(--sub)">' + l.cost + ' ⭐</div></div>' +
+      '<button class="btn ghost" style="padding:8px 10px" onclick="abrirEditarRecompensa(' + i + ')">✏️</button></div>';
+  }).join('');
+
+  const pend = fila.length + resg.length + sugPendentes.length;
   $('p-sub').textContent = pend ? pend + ' decisão(ões) esperando você — 60 segundos' : 'Tudo em dia ✨';
   $('p-bell-dot').style.display = pend ? 'block' : 'none';
 
@@ -984,8 +1168,9 @@ function render(){
   $('p-next-pay').textContent = R$(state.stars * TAXA);
   $('p-goal').textContent = state.stars + ' / ' + goal.cost + ' ⭐ · você precificou em R$ ' + (goal.cost * TAXA).toFixed(0);
   $('p-goal-bar').style.width = pct + '%';
+  $('p-goal-edit').onclick = () => abrirEditarRecompensa(goalIdx);
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheets(); closeFull('sh-newtask'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheets(); closeFull('sh-newtask'); closeFull('sh-reward'); } });
 render();
 </script>
