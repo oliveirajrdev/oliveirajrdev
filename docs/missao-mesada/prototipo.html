@@ -269,6 +269,11 @@
   .toggle input:checked ~ .track .thumb{transform:translateX(18px)}
   .toggle input:focus-visible ~ .track{outline:2px solid var(--brand); outline-offset:2px}
 
+  .pillbtn{border:0; border-radius:999px; padding:6px 14px; font-size:.72rem; font-weight:800; cursor:pointer; white-space:nowrap}
+  .pillbtn.link{background:var(--star-soft); color:#96700f}
+  .pillbtn.danger{background:var(--danger-soft); color:var(--danger)}
+  .pillbtn:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+
   /* kid specifics */
   .kid-hero{
     background:linear-gradient(135deg,#6C4DF6,#8f6ffb); color:#fff;
@@ -499,23 +504,41 @@
           </div>
         </section>
 
-        <!-- FAMILIA -->
+        <!-- CONFIGURAÇÕES -->
         <section class="scr" id="p-familia">
-          <h2 class="sec">Perfis</h2>
+          <h2 class="sec">Filhos</h2>
+          <div class="card stack" id="p-filhos"></div>
+          <button class="row" style="width:100%; background:none; border:0; cursor:pointer; padding:12px 4px" onclick="abrirAddFilho()">
+            <div class="dot" style="font-size:1.2rem; color:var(--brand)">＋</div>
+            <div class="grow" style="text-align:left"><b style="font-size:.85rem">Adicionar filho</b></div>
+          </button>
+
+          <h2 class="sec">Conta</h2>
           <div class="card stack" style="font-size:.84rem">
-            <div class="row"><div class="avatar">🦄</div><div class="grow"><b>Ana, 8</b><div style="font-size:.72rem;color:var(--sub)">Modo Explorador · 1 ⭐ = R$ 0,40</div></div></div>
-            <div class="row"><div class="avatar">🦖</div><div class="grow"><b>Léo, 11</b><div style="font-size:.72rem;color:var(--sub)">Modo Pro · 1 ⭐ = R$ 0,50 · saque liberado</div></div></div>
-            <div class="row"><div class="avatar">👨</div><div class="grow"><b>Marcos (pai)</b><div style="font-size:.72rem;color:var(--sub)">Admin · carteira separada (modo dois lares)</div></div></div>
-            <div class="row"><div class="avatar">👵</div><div class="grow"><b>Vó Lúcia</b><div style="font-size:.72rem;color:var(--sub)">Colaboradora · aprova missões, não mexe em dinheiro</div></div></div>
+            <div class="row"><div class="dot">👤</div><div class="grow"><b>Perfil</b><div style="font-size:.72rem;color:var(--sub)">oliveirajrdev@gmail.com</div></div></div>
+            <div class="row"><div class="dot">🎁</div><div class="grow"><b>Assinatura</b></div><span class="chip" style="background:var(--brand-soft);color:var(--brand)">Grátis</span></div>
+            <div class="row" style="cursor:pointer" onclick="toast('parent','Em breve: comparativo de planos Premium ✨')"><div class="dot">✨</div><div class="grow"><b style="color:var(--brand)">Mudar para Premium</b></div></div>
           </div>
 
-          <h2 class="sec">Boletim de julho — Léo</h2>
-          <div class="card stack" style="font-size:.8rem">
-            <div class="row"><span style="font-size:1.1rem">✅</span><div class="grow">Conclusão: <b>87%</b> (+9 p.p. vs junho)</div></div>
-            <div class="row"><span style="font-size:1.1rem">⭐</span><div class="grow">Qualidade média: <b>2,4 / 3</b></div></div>
-            <div class="row"><span style="font-size:1.1rem">💰</span><div class="grow">Perfil: <b>focado na meta</b> — trocou só 20% do que ganhou, o resto está indo para o skate</div></div>
-            <div class="row" style="background:var(--star-soft); border-radius:12px; padding:10px"><span style="font-size:1.1rem">💡</span><div class="grow"><b>Insight:</b> Léo falha mais nas missões da manhã. Que tal mover "lição de casa" para as 16h?</div></div>
+          <h2 class="sec">Controle de acesso</h2>
+          <div class="card stack" id="p-acesso"></div>
+          <button class="row" style="width:100%; background:none; border:0; cursor:pointer; padding:12px 4px" onclick="convidarResponsavel()">
+            <div class="dot" style="font-size:1.2rem; color:var(--brand)">＋</div>
+            <div class="grow" style="text-align:left"><b style="font-size:.85rem">Convidar responsável</b></div>
+          </button>
+
+          <h2 class="sec">Informações</h2>
+          <div class="card stack" style="font-size:.84rem">
+            <div class="row" style="cursor:pointer" onclick="toast('parent','Abriria os Termos e condições')"><div class="dot">📄</div><div class="grow"><b>Termos e condições</b></div></div>
+            <div class="row" style="cursor:pointer" onclick="toast('parent','Abriria a Política de privacidade')"><div class="dot">🛡️</div><div class="grow"><b>Política de privacidade</b></div></div>
+            <div class="row" style="cursor:pointer" onclick="toast('parent','contato@missaomesada.com.br')"><div class="dot">✉️</div><div class="grow"><b>Fale conosco</b><div style="font-size:.72rem;color:var(--sub)">contato@missaomesada.com.br</div></div></div>
           </div>
+
+          <div class="card stack" style="font-size:.84rem; margin-top:16px">
+            <div class="row" style="cursor:pointer" onclick="confirmAction('Sair da conta','Você vai precisar entrar de novo para gerenciar a família.','Sair', sairAction)"><div class="dot">↪️</div><div class="grow"><b>Sair</b></div></div>
+            <div class="row" style="cursor:pointer" onclick="confirmAction('Excluir conta','Remove todas as missões, saldos e histórico da família. Essa ação não pode ser desfeita.','Excluir conta', excluirContaAction)"><div class="dot" style="background:var(--danger-soft); color:var(--danger)">🗑️</div><div class="grow"><b style="color:var(--danger)">Excluir conta</b></div></div>
+          </div>
+          <div style="text-align:center; font-size:.7rem; color:var(--sub); margin-top:14px">Versão 1.0.0</div>
         </section>
       </div>
 
@@ -634,6 +657,59 @@
     </div>
 
     <!-- ================= SHEETS ================= -->
+    <div class="sheet-veil" id="sh-vincular" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3 id="lk-title">Vincular</h3>
+        <div style="text-align:center; padding:6px 0 4px">
+          <div style="width:140px; height:140px; margin:6px auto 14px; border-radius:16px; background:var(--brand-soft); display:flex; align-items:center; justify-content:center; font-size:3rem; color:var(--brand)">▦</div>
+          <div class="num" style="font-size:1.35rem; font-weight:800; letter-spacing:.12em" id="lk-code">4F92-KX</div>
+          <div style="font-size:.78rem; color:var(--sub); margin-top:10px" id="lk-hint"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-addfilho" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>Adicionar filho</h3>
+        <button class="icon-pick" style="margin-bottom:14px" aria-label="Trocar avatar" onclick="cicleChildAvatar()">
+          <span id="af-avatar">🦊</span><span class="edit">✏️</span>
+        </button>
+        <div class="field-card">
+          <div class="field-row"><input type="text" id="af-name" placeholder="Nome"></div>
+        </div>
+        <h2 class="sec">Idade</h2>
+        <div class="stepper">
+          <button aria-label="Diminuir" onclick="stepChildAge(-1)">−</button>
+          <div class="val num"><span id="af-age">8</span> anos</div>
+          <button aria-label="Aumentar" onclick="stepChildAge(1)">＋</button>
+        </div>
+        <div style="font-size:.72rem; color:var(--sub); margin-top:8px" id="af-mode-hint"></div>
+        <button class="btn primary" style="width:100%; margin-top:18px" onclick="adicionarFilho()">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-acesso" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3 id="acc-title">Responsável</h3>
+        <div class="stack" id="acc-body"></div>
+      </div>
+    </div>
+
+    <div class="sheet-veil" id="sh-confirm" onclick="if(event.target===this)closeSheets()">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3 id="cf-title">Confirmar</h3>
+        <div id="cf-body" style="font-size:.82rem; color:var(--sub); margin-bottom:16px"></div>
+        <div class="row">
+          <button class="btn ghost" style="flex:1" onclick="closeSheets()">Cancelar</button>
+          <button class="btn danger" style="flex:1" id="cf-confirm-btn">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <div class="sheet-veil" id="sh-suggest" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
@@ -738,6 +814,15 @@ const state = {
   ],
   voucher: null,
   nextId: 100,
+  /* Configurações: filhos vinculados e responsáveis com acesso à conta */
+  children: [
+    { id: 1, name: 'Ana', avatar: '🦄', stars: 34 },
+    { id: 2, name: 'Léo', avatar: '🦖', stars: null }, // null = usa o saldo ao vivo (state.stars)
+  ],
+  coGestores: [
+    { name: 'Marcos', avatar: '👨', role: 'admin' },
+    { name: 'Vó Lúcia', avatar: '👵', role: 'colaborador' },
+  ],
 };
 
 /* ---------------- helpers ---------------- */
@@ -1038,6 +1123,101 @@ function enviarSugestao(){
   render();
 }
 
+/* ---------------- Configurações: filhos e controle de acesso ---------------- */
+function randCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  return c.slice(0, 4) + '-' + c.slice(4);
+}
+function abrirVincular(nome){
+  $('lk-title').textContent = 'Vincular ' + nome;
+  $('lk-code').textContent = randCode();
+  $('lk-hint').textContent = 'Peça para ' + nome + ' abrir o app e digitar este código, ou escanear o QR.';
+  openSheet('sh-vincular');
+}
+function convidarResponsavel(){
+  $('lk-title').textContent = 'Convidar responsável';
+  $('lk-code').textContent = randCode();
+  $('lk-hint').textContent = 'Envie este código para a pessoa entrar como colaboradora da família.';
+  openSheet('sh-vincular');
+}
+
+const CHILD_AVATARS = ['🦊', '🦄', '🦖', '🐻', '🐼', '🐸', '🦁', '🐨'];
+let afAvatarIdx = 0;
+function cicleChildAvatar(){
+  afAvatarIdx = (afAvatarIdx + 1) % CHILD_AVATARS.length;
+  $('af-avatar').textContent = CHILD_AVATARS[afAvatarIdx];
+}
+function updateChildModeHint(){
+  const age = parseInt($('af-age').textContent, 10);
+  $('af-mode-hint').textContent = age < 10 ? 'Modo Explorador — telas simples, com áudio' : 'Modo Pro — visual sem infantilização';
+}
+function stepChildAge(delta){
+  const v = Math.max(4, Math.min(17, parseInt($('af-age').textContent, 10) + delta));
+  $('af-age').textContent = v;
+  updateChildModeHint();
+}
+function abrirAddFilho(){
+  afAvatarIdx = 0;
+  $('af-avatar').textContent = CHILD_AVATARS[0];
+  $('af-name').value = '';
+  $('af-age').textContent = '8';
+  updateChildModeHint();
+  openSheet('sh-addfilho');
+}
+function adicionarFilho(){
+  const name = $('af-name').value.trim();
+  if (!name) return;
+  state.children.push({ id: state.nextId++, name, avatar: $('af-avatar').textContent, stars: 0 });
+  closeSheets();
+  toast('parent', name + ' adicionado(a) — gere o vínculo para entrar no app');
+  render();
+}
+function excluirFilho(id){
+  const c = state.children.find(x => x.id === id);
+  if (!c) return;
+  confirmAction('Excluir ' + c.name, 'Remove o acesso, as missões e o histórico de ' + c.name + '. Essa ação não pode ser desfeita.', 'Excluir', () => {
+    state.children = state.children.filter(x => x.id !== id);
+    toast('parent', c.name + ' removido(a) da família');
+    render();
+  });
+}
+
+function abrirAcessoOpcoes(i){
+  const p = state.coGestores[i];
+  $('acc-title').textContent = p.name;
+  $('acc-body').innerHTML =
+    '<button class="btn soft tpl" onclick="alternarPapel(' + i + ')">' + (p.role === 'admin' ? '⬇️ Tornar colaborador' : '⬆️ Tornar admin') + '</button>' +
+    '<button class="btn danger tpl" onclick="removerAcesso(' + i + ')">🗑️ Remover acesso</button>';
+  openSheet('sh-acesso');
+}
+function alternarPapel(i){
+  const p = state.coGestores[i];
+  p.role = p.role === 'admin' ? 'colaborador' : 'admin';
+  closeSheets();
+  toast('parent', p.name + ' agora é ' + (p.role === 'admin' ? 'admin' : 'colaborador(a)'));
+  render();
+}
+function removerAcesso(i){
+  const p = state.coGestores[i];
+  state.coGestores.splice(i, 1);
+  closeSheets();
+  toast('parent', 'Acesso de ' + p.name + ' removido');
+  render();
+}
+
+function confirmAction(title, body, confirmLabel, onConfirm){
+  $('cf-title').textContent = title;
+  $('cf-body').textContent = body;
+  const btn = $('cf-confirm-btn');
+  btn.textContent = confirmLabel;
+  btn.onclick = () => { closeSheets(); onConfirm(); };
+  openSheet('sh-confirm');
+}
+function sairAction(){ toast('parent', 'Sessão encerrada 👋'); }
+function excluirContaAction(){ toast('parent', 'Conta marcada para exclusão'); }
+
 function flash(nome, stars){
   closeSheets();
   const icon = nome.split(' ')[0];
@@ -1169,6 +1349,27 @@ function render(){
   $('p-goal').textContent = state.stars + ' / ' + goal.cost + ' ⭐ · você precificou em R$ ' + (goal.cost * TAXA).toFixed(0);
   $('p-goal-bar').style.width = pct + '%';
   $('p-goal-edit').onclick = () => abrirEditarRecompensa(goalIdx);
+
+  /* parent configurações: filhos + controle de acesso */
+  $('p-filhos').innerHTML = state.children.map(c => {
+    const saldo = c.stars === null ? state.stars : c.stars;
+    return '<div class="row"><div class="avatar" style="font-size:1.3rem">' + c.avatar + '</div>' +
+      '<div class="grow"><b style="font-size:.88rem">' + c.name + '</b><div class="num" style="font-size:.72rem;color:var(--sub)">⭐ ' + saldo + '</div></div>' +
+      '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end">' +
+      '<button class="pillbtn link" onclick="abrirVincular(\'' + c.name + '\')">Vincular</button>' +
+      '<button class="pillbtn danger" onclick="excluirFilho(' + c.id + ')">Excluir</button>' +
+      '</div></div>';
+  }).join('');
+
+  $('p-acesso').innerHTML = state.coGestores.map((p, i) => {
+    const roleLabel = p.role === 'admin' ? 'Admin' : 'Colaborador';
+    const chipClass = p.role === 'admin' ? 'ok' : 'wait';
+    const desc = p.role === 'admin' ? 'Acesso total, inclusive dinheiro' : 'Aprova missões, não mexe em dinheiro';
+    return '<div class="row"><div class="avatar">' + p.avatar + '</div><div class="grow"><b style="font-size:.86rem">' + p.name +
+      '</b><div style="font-size:.72rem;color:var(--sub)">' + desc + '</div></div>' +
+      '<span class="chip ' + chipClass + '">' + roleLabel + '</span>' +
+      '<button class="btn ghost" style="padding:8px 10px" onclick="abrirAcessoOpcoes(' + i + ')">⋯</button></div>';
+  }).join('');
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeSheets(); closeFull('sh-newtask'); closeFull('sh-reward'); } });
