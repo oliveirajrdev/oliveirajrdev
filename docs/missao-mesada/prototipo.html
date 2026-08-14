@@ -739,24 +739,21 @@
     <div class="sheet-veil" id="sh-card" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
-        <h3>Aplicar cartão — Léo</h3>
+        <h3 id="card-title">Aplicar cartão</h3>
         <div class="stack">
           <button class="btn soft tpl" onclick="cartao('amarelo','Não cumpriu o combinado')">🟨 Amarelo · advertência, sem custo</button>
           <button class="btn danger tpl" onclick="cartao('vermelho','Briga com a irmã',10)">🟥 Vermelho · Briga com a irmã · <b>−10 ⭐</b></button>
           <button class="btn danger tpl" onclick="cartao('vermelho','Desrespeito',15)">🟥 Vermelho · Desrespeito · <b>−15 ⭐</b></button>
-          <div style="font-size:.72rem; color:var(--sub)">Léo pode contestar 1 vez — o app avisa vocês dois. Atenção: a multa sai do saldo total e pode atrasar uma troca.</div>
+          <div style="font-size:.72rem; color:var(--sub)" id="card-hint"></div>
         </div>
       </div>
     </div>
 
-    <div class="sheet-veil" id="sh-flash" onclick="if(event.target===this)closeSheets()">
+    <div class="sheet-veil" id="sh-filho" onclick="if(event.target===this)closeSheets()">
       <div class="sheet">
         <div class="grab"></div>
-        <h3>⚡ Missão relâmpago</h3>
-        <div class="stack">
-          <button class="btn soft tpl" onclick="flash('🗑️ Descer com o lixo AGORA',10)">🗑️ Descer com o lixo · vale <b>2× (10 ⭐)</b> se feita em 1 h</button>
-          <button class="btn soft tpl" onclick="flash('🚗 Ajudar a descarregar as compras',12)">🚗 Descarregar as compras · <b>2× (12 ⭐)</b> · 30 min</button>
-        </div>
+        <h3 id="fl-title">Ações</h3>
+        <div class="stack" id="fl-body"></div>
       </div>
     </div>
 
@@ -919,22 +916,17 @@ function aprovarTroca(id){
   }
   render();
 }
+let cartaoChildName = 'Léo';
 function cartao(tipo, motivo, valor){
   closeSheets();
   if (tipo === 'amarelo') {
-    toast('parent', '🟨 Advertência registrada. Léo foi notificado.');
+    toast('parent', '🟨 Advertência registrada. ' + cartaoChildName + ' foi notificado(a).');
   } else {
     const desc = Math.min(valor, state.stars);
     state.stars -= desc;
     pushLedger('🟥 Cartão vermelho: ' + motivo, -desc);
-    toast('parent', '🟥 −' + desc + ' ⭐ do saldo. Léo pode contestar 1 vez.');
+    toast('parent', '🟥 −' + desc + ' ⭐ do saldo. ' + cartaoChildName + ' pode contestar 1 vez.');
   }
-  render();
-}
-function bonus(){
-  state.stars += 5;
-  pushLedger('🎁 Bônus surpresa da mamãe', +5);
-  toast('parent', '🎁 +5 ⭐ enviadas com uma mensagem para o Léo');
   render();
 }
 /* ---------------- cadastro de missão (tela cheia) ---------------- */
@@ -1170,6 +1162,33 @@ function excluirFilho(id){
   });
 }
 
+function abrirFilhoOpcoes(id){
+  const c = state.children.find(x => x.id === id);
+  if (!c) return;
+  $('fl-title').textContent = c.name;
+  $('fl-body').innerHTML =
+    '<button class="btn soft tpl" onclick="closeSheets(); abrirCartaoPara(' + id + ')">🟨🟥 Aplicar cartão</button>' +
+    '<button class="btn soft tpl" onclick="bonusPara(' + id + ')">🎁 Dar bônus surpresa</button>' +
+    '<button class="btn danger tpl" onclick="closeSheets(); excluirFilho(' + id + ')">🗑️ Excluir filho</button>';
+  openSheet('sh-filho');
+}
+function abrirCartaoPara(id){
+  const c = state.children.find(x => x.id === id);
+  cartaoChildName = c ? c.name : 'Léo';
+  $('card-title').textContent = 'Aplicar cartão — ' + cartaoChildName;
+  $('card-hint').textContent = cartaoChildName + ' pode contestar 1 vez — o app avisa vocês dois. A multa sai do saldo total e pode atrasar uma troca.';
+  openSheet('sh-card');
+}
+function bonusPara(id){
+  const c = state.children.find(x => x.id === id);
+  const name = c ? c.name : 'Léo';
+  closeSheets();
+  state.stars += 5;
+  pushLedger('🎁 Bônus surpresa', +5);
+  toast('parent', '🎁 +5 ⭐ enviadas com uma mensagem para ' + name);
+  render();
+}
+
 function abrirAcessoOpcoes(i){
   const p = state.coGestores[i];
   $('acc-title').textContent = p.name;
@@ -1204,11 +1223,12 @@ function confirmAction(title, body, confirmLabel, onConfirm){
 function sairAction(){ toast('parent', 'Sessão encerrada 👋'); }
 function excluirContaAction(){ toast('parent', 'Conta marcada para exclusão'); }
 
-function flash(nome, stars){
-  closeSheets();
-  const icon = nome.split(' ')[0];
-  state.missions.unshift({ id: state.nextId++, name: nome.slice(icon.length + 1), icon, period: 'Agora', stars, st: 'todo', flash: true });
-  toast('parent', '⚡ Relâmpago publicada — vale 2× na próxima 1 h');
+function flashFromTemplate(id){
+  const t = state.templates.find(x => x.id === id);
+  if (!t) return;
+  const flashStars = t.stars * 2;
+  state.missions.unshift({ id: state.nextId++, name: t.name, icon: t.icon, period: 'Agora', stars: flashStars, st: 'todo', flash: true });
+  toast('parent', '⚡ "' + t.name + '" vale 2× (' + flashStars + ' ⭐) por 1 h — publicada para o Léo');
   render();
 }
 
@@ -1325,7 +1345,8 @@ function render(){
   /* parent missões: todas as missões cadastradas pela família */
   $('p-all-missions').innerHTML = state.templates.map(t =>
     '<div class="row"><div class="dot">' + t.icon + '</div><div class="grow"><b>' + t.name + '</b>' +
-    '<div style="font-size:.72rem;color:var(--sub)">' + t.freq + ' · ' + t.stars + ' ⭐' + (t.foto ? ' · exige foto' : '') + '</div></div></div>'
+    '<div style="font-size:.72rem;color:var(--sub)">' + t.freq + ' · ' + t.stars + ' ⭐' + (t.foto ? ' · exige foto' : '') + '</div></div>' +
+    '<button class="btn ghost" style="padding:8px 10px" aria-label="Marcar como missão relâmpago hoje" onclick="flashFromTemplate(' + t.id + ')">⚡</button></div>'
   ).join('');
 
   /* parent financeiro */
@@ -1341,10 +1362,8 @@ function render(){
     const saldo = c.stars === null ? state.stars : c.stars;
     return '<div class="row"><div class="avatar" style="font-size:1.3rem">' + c.avatar + '</div>' +
       '<div class="grow"><b style="font-size:.88rem">' + c.name + '</b><div class="num" style="font-size:.72rem;color:var(--sub)">⭐ ' + saldo + '</div></div>' +
-      '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end">' +
       '<button class="pillbtn link" onclick="abrirVincular(\'' + c.name + '\')">Vincular</button>' +
-      '<button class="pillbtn danger" onclick="excluirFilho(' + c.id + ')">Excluir</button>' +
-      '</div></div>';
+      '<button class="btn ghost" style="padding:8px 10px" aria-label="Mais ações para ' + c.name + '" onclick="abrirFilhoOpcoes(' + c.id + ')">⋯</button></div>';
   }).join('');
 
   $('p-acesso').innerHTML = state.coGestores.map((p, i) => {

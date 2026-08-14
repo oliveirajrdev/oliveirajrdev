@@ -196,7 +196,7 @@ Enxuto por design — só o que exige decisão do pai agora:
    - Devolver → escolher um motivo rápido ("Faltou capricho", "Não terminou", "Foto não confere") — a tarefa volta com novo prazo, sem redução na 2ª entrega.
 2. **Trocas pendentes** — aprovar itens do catálogo ou pedidos de troca por Pix.
 
-*(As antigas seções "Pulso do dia" e "Ações rápidas" — Missão Relâmpago, Cartão, Bônus — foram retiradas do Painel para deixá-lo mais direto. Ver §10 sobre onde essas ações deveriam reaparecer.)*
+*(As antigas seções "Pulso do dia" e "Ações rápidas" foram retiradas do Painel para deixá-lo mais direto. Missão Relâmpago, Cartão e Bônus não desapareceram — foram realocadas para um lugar mais contextual, ver §5's telas Missões e Configurações abaixo.)*
 
 #### Ação — **Cadastrar missão** (FAB)
 Diferente da v1 (biblioteca de modelos em poucos toques), o cadastro agora é um **formulário completo em tela cheia**, no padrão de apps nativos de tarefas:
@@ -211,6 +211,7 @@ Esse mesmo padrão visual (ícone + campos + stepper) é reaproveitado no cadast
 
 #### Tela 2 — **Missões**
 - **Missões cadastradas:** lista de todas as missões da família (não mais uma grade semanal), alimentada tanto pelas missões de exemplo quanto por tudo que é criado pelo FAB.
+- Cada missão tem um botão **⚡** que a marca como Relâmpago por 1 hora, dobrando o valor daquela ocorrência — é o mesmo mecanismo da v1, só que preso à missão específica em vez de um sheet genérico com exemplos soltos.
 - *(A v1 tinha uma mecânica de "aposentar" missão que virou hábito — foi removida; ver §10.)*
 
 #### Tela 3 — **Recompensas** (era "Financeiro")
@@ -223,7 +224,7 @@ Esse mesmo padrão visual (ícone + campos + stepper) é reaproveitado no cadast
 #### Tela 4 — **Configurações** (era "Família")
 Reestruturada por completo — a v1 misturava filhos e responsáveis numa lista única e incluía um "Boletim mensal" com insights. Isso foi removido; a estrutura atual:
 
-- **Filhos:** um card por filho (avatar, saldo) com **"Vincular"** (gera um código/QR para parear o dispositivo) e **"Excluir"** (remove com confirmação). **"+ Adicionar filho"** abre um cadastro leve: avatar, nome, idade — o app deriva o Modo Explorador/Pro automaticamente pela idade.
+- **Filhos:** um card por filho (avatar, saldo) com **"Vincular"** (gera um código/QR para parear o dispositivo) e um menu **"⋯"** com as ações ligadas àquele filho especificamente: **🟨🟥 Aplicar cartão**, **🎁 Dar bônus surpresa** e **Excluir** (com confirmação). **"+ Adicionar filho"** abre um cadastro leve: avatar, nome, idade — o app deriva o Modo Explorador/Pro automaticamente pela idade.
 - **Conta:** o perfil do próprio responsável, **só exibido** (sem tela de edição — decisão explícita de não construir isso agora, ver §10), mais **Assinatura** (Grátis) e **"Mudar para Premium"**.
 - **Controle de acesso:** a lista de co-gestores (ex.: outro responsável, avó) com o papel de cada um — **Admin** (acesso total) ou **Colaborador** (aprova missões, não mexe em dinheiro) — com opção de alternar o papel ou remover o acesso. **"+ Convidar responsável"** reaproveita o mesmo fluxo de código/QR do "Vincular".
 - **Informações:** Termos e condições, Política de privacidade, Fale conosco.
@@ -265,7 +266,7 @@ Reestruturada por completo — a v1 misturava filhos e responsáveis numa lista 
 5. **Aprovação em dois toques com nota de qualidade em modal** — o pai nunca precisa escrever nada para aprovar; a fila fica compacta, e o julgamento de qualidade vira uma decisão rápida e visual.
 6. **Voucher de troca** — o item aprovado vira um "ticket" visível (quem liberou, quando). Resolve a fonte nº 1 de conflito pós-troca.
 7. **Vínculo por código/QR + Controle de acesso por papéis** — parear o dispositivo do filho ou convidar um co-gestor é o mesmo fluxo simples, e cada responsável entra com um papel claro (Admin/Colaborador).
-8. **Cartões com direito de resposta** *(mecânica documentada, ainda sem ponto de entrada na UI — ver §10)* — nenhum concorrente modela o *processo justo* da disciplina.
+8. **Cartões e bônus contextuais ao filho, missão relâmpago contextual à missão** — em vez de um grid genérico de "ações rápidas" solto no Painel, cada ação vive onde faz sentido: cartão/bônus no menu do filho (Configurações), relâmpago na própria missão (Missões). Nenhum concorrente modela o *processo justo* da disciplina com esse nível de contexto.
 
 ---
 
@@ -287,7 +288,7 @@ Tarefas ─────────────┐                     Painel �
  ├─ card da meta      │                     ├─ fila de aprovações (compacta → modal de nota)
  ├─ chama da sequência│                     └─ trocas pendentes
  └─ tarefa → +N ⭐     │                    Missões
-Recompensas           │                     └─ missões cadastradas (lista única)
+Recompensas           │                     └─ missões cadastradas (⚡ relâmpago por missão)
  ├─ saldo único       │                    (＋) FAB ← cadastro de missão (tela cheia)
  ├─ card da meta       │                    Recompensas
  ├─ 💡 sugerir         │                     ├─ sugestões da criança (precificar/recusar)
@@ -295,7 +296,7 @@ Recompensas           │                     └─ missões cadastradas (lista
  ├─ virar Pix          │                     ├─ regras da economia
  └─ extrato            │                     └─ meta em destaque (editar preço)
 Conquistas                                  Configurações
- ├─ avatar (XP), patentes, medalhas          ├─ filhos (vincular / excluir / adicionar)
+ ├─ avatar (XP), patentes, medalhas          ├─ filhos (vincular · ⋯ cartão/bônus/excluir · adicionar)
  └─ estante de conquistas                    ├─ conta (perfil, assinatura)
                                               ├─ controle de acesso (papéis)
                                               ├─ informações
@@ -312,10 +313,10 @@ Registro do que mudou de rumo durante a prototipagem, para não perder o histór
 - **Mural de Bicos entre irmãos** (missões avulsas disputáveis) — removido a pedido explícito. Era um gatilho de abertura do app interessante; considerar reintroduzir em uma fase futura se houver mais de um filho ativo.
 - **Aposentadoria de missão / graduação de hábito** — removido a pedido explícito. Era o diferencial filosófico mais forte da v1 ("a recompensa deveria deixar de ser necessária"); vale reavaliar como feature de fase 2, sem reintroduzir a complexidade de UI que tinha.
 - **Boletim mensal com insights** — cortado do escopo atual. Ideia ainda válida para uma camada de analytics/insights, só não faz parte do MVP prototipado.
-- **Ações rápidas (⚡ Relâmpago, 🟨🟥 Cartão, 🎁 Bônus)** — o código e as telas existem, mas perderam o ponto de entrada quando "Pulso do dia" e "Ações rápidas" saíram do Painel. Decisão em aberto: para onde realocar (aba Missões? um menu dentro do FAB? uma nova ação rápida por tarefa?).
+- ~~**Ações rápidas (⚡ Relâmpago, 🟨🟥 Cartão, 🎁 Bônus)** sem ponto de entrada~~ — **resolvido.** Relâmpago virou um botão por missão na aba Missões (contextual à missão); Cartão e Bônus viraram ações dentro do menu "⋯" de cada filho, em Configurações → Filhos (contextual à criança). O Painel continua enxuto, só com fila de aprovações e trocas pendentes.
 - **Perfil do responsável (edição)** — decisão explícita de não construir uma tela de edição de perfil por enquanto; o Controle de acesso resolve a necessidade real (quem pode fazer o quê), que era o problema por trás do pedido original.
 - **Modo dois lares (carteiras separadas por responsável)** — segue como visão de produto documentada, mas ainda não modelado como um toggle real em Controle de acesso.
 
 ---
 
-*Documento vivo — sincronizado com `prototipo.html`. Próxima decisão em aberto: destino das Ações Rápidas (item acima) e priorização de MVP para desenvolvimento real.*
+*Documento vivo — sincronizado com `prototipo.html`. Próxima decisão em aberto: priorização de MVP para desenvolvimento real.*
