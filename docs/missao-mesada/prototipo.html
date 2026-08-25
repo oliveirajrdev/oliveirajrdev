@@ -30,8 +30,18 @@
     padding:26px 16px 40px;
   }
   .pg-head{text-align:center; max-width:420px}
-  .pg-head h1{font-size:1.25rem; font-weight:800; letter-spacing:-.01em}
-  .pg-head p{color:var(--pg-sub); font-size:.83rem; margin-top:4px; line-height:1.45}
+  .pg-head h1.brand{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    font-family:'Baloo 2', ui-rounded, system-ui, sans-serif;
+    font-size:1.4rem; font-weight:700; letter-spacing:-.01em; color:var(--pg-ink);
+  }
+  .brand-badge{
+    width:36px; height:36px; border-radius:11px; flex:none;
+    background:linear-gradient(135deg,#6D4AFF,#8f6ffb);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(109,74,255,.35);
+  }
+  .pg-head p{color:var(--pg-sub); font-size:.83rem; margin-top:6px; line-height:1.45}
 
   .switch{
     display:flex; background:var(--pg-card); border:1px solid var(--pg-line);
@@ -68,6 +78,7 @@
     --font-display:'Baloo 2', ui-rounded, system-ui, sans-serif;
     --font-body:'Nunito', ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-family:var(--font-body);
+    color-scheme:light;
   }
   .screen-wrap[data-app="parent"]{
     --bg:#F4F6F5; --card:#ffffff; --ink:#17251F; --sub:#5C6E68;
@@ -77,6 +88,7 @@
     --font-display:'Manrope', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --font-body:'Work Sans', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-family:var(--font-body);
+    color-scheme:light;
   }
   .screen-wrap{background:var(--bg); color:var(--ink)}
   .font-display{font-family:var(--font-display)}
@@ -333,8 +345,11 @@
 </style>
 
 <div class="pg-head">
-  <h1>Missão Mesada — protótipo navegável</h1>
-  <p>Alterne entre as duas pontas. Aprove uma entrega no painel dos pais e veja as estrelas caírem no app da criança.</p>
+  <h1 class="brand">
+    <span class="brand-badge" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7.1L12 17.8l-6.2 3.5L7 14.2 2 9.3l7.1-.7L12 2z"/></svg></span>
+    Missão Mesada
+  </h1>
+  <p>Protótipo navegável — alterne entre as duas pontas. Aprove uma entrega no painel dos pais e veja as estrelas caírem no app da criança.</p>
 </div>
 
 <svg style="position:absolute; width:0; height:0" aria-hidden="true">
@@ -358,6 +373,14 @@
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M9 15l6-6"/><path d="M8.5 12.5l-1.8 1.8a3 3 0 0 0 4.2 4.2l2.5-2.5"/><path d="M15.5 11.5l1.8-1.8a3 3 0 0 0-4.2-4.2L10.6 8"/></symbol>
     <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2c1.5 4-3 5-3 9a3 3 0 0 0 6 0c0-1.2-.6-1.8-.6-1.8 1.8 1.2 3.1 3.6 3.1 6a5.5 5.5 0 0 1-11 0C6.5 9 9.5 7 12 2z"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 17h6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M4 12h11"/><path d="M11 8l4 4-4 4"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3z"/><circle cx="18.5" cy="5.5" r="1.1" class="icon-fill"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" class="icon-fill"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a1.5 1.5 0 0 0 0 3v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a1.5 1.5 0 0 0 0-3V8z"/><path d="M14 6.5v11" stroke-dasharray="2 2.4"/></symbol>
   </defs>
 </svg>
 
@@ -516,7 +539,7 @@
           <h2 class="sec">Regras da economia</h2>
           <div class="card stack" style="font-size:.82rem">
             <div class="row"><div class="grow"><b>Cotação da estrela</b><div style="font-size:.72rem;color:var(--sub)">1 ⭐ = R$ 0,50 · configurada aqui, por filho</div></div><button class="btn ghost" onclick="toast('parent','Simulador: nesse ritmo, Léo ganha ~R$ 46/mês')">Simular</button></div>
-            <div class="row"><div class="grow"><b>Dia da mesada</b><div style="font-size:.72rem;color:var(--sub)">Todo dia 5 · próxima troca por Pix sugerida: <span class="num" id="p-next-pay"></span></div></div><button class="btn soft" onclick="toast('parent','Mesada marcada como paga ✓ (registrada no extrato)')">Pagar ✓</button></div>
+            <div class="row"><div class="grow"><b>Dia da mesada</b><div style="font-size:.72rem;color:var(--sub)">Todo dia 5 · próxima troca por Pix sugerida: <span class="num" id="p-next-pay"></span></div></div><button class="btn soft" onclick="toast('parent','Mesada marcada como paga ✓ (registrada no extrato)')"><svg class="icon"><use href="#i-check"/></svg> Pagar</button></div>
             <div class="row"><div class="grow"><b>Teto mensal</b><div style="font-size:.72rem;color:var(--sub)">R$ 80 · comprometido até agora: R$ 52 ✅</div></div></div>
             <div class="row"><div class="grow"><b>Juros do saldo</b><div style="font-size:.72rem;color:var(--sub)">2% ao mês sobre estrelas não trocadas — ensina juros compostos</div></div><button class="btn ghost" onclick="toast('parent','Juros do saldo ativado 🪙')">Ativar</button></div>
           </div>
@@ -546,9 +569,9 @@
 
           <h2 class="sec">Conta</h2>
           <div class="card stack" style="font-size:.84rem">
-            <div class="row"><div class="dot">👤</div><div class="grow"><b>Perfil</b><div style="font-size:.72rem;color:var(--sub)">oliveirajrdev@gmail.com</div></div></div>
-            <div class="row"><div class="dot">🎁</div><div class="grow"><b>Assinatura</b></div><span class="chip" style="background:var(--brand-soft);color:var(--brand)">Grátis</span></div>
-            <button class="row rowbtn" onclick="toast('parent','Em breve: comparativo de planos Premium ✨')"><div class="dot">✨</div><div class="grow"><b style="color:var(--brand)">Mudar para Premium</b></div></button>
+            <div class="row"><div class="dot"><svg class="icon"><use href="#i-user"/></svg></div><div class="grow"><b>Perfil</b><div style="font-size:.72rem;color:var(--sub)">oliveirajrdev@gmail.com</div></div></div>
+            <div class="row"><div class="dot"><svg class="icon"><use href="#i-gift"/></svg></div><div class="grow"><b>Assinatura</b></div><span class="chip" style="background:var(--brand-soft);color:var(--brand)">Grátis</span></div>
+            <button class="row rowbtn" onclick="toast('parent','Em breve: comparativo de planos Premium ✨')"><div class="dot"><svg class="icon"><use href="#i-sparkle"/></svg></div><div class="grow"><b style="color:var(--brand)">Mudar para Premium</b></div></button>
           </div>
 
           <h2 class="sec">Controle de acesso</h2>
@@ -560,13 +583,13 @@
 
           <h2 class="sec">Informações</h2>
           <div class="card stack" style="font-size:.84rem">
-            <button class="row rowbtn" onclick="toast('parent','Abriria os Termos e condições')"><div class="dot">📄</div><div class="grow"><b>Termos e condições</b></div></button>
-            <button class="row rowbtn" onclick="toast('parent','Abriria a Política de privacidade')"><div class="dot">🛡️</div><div class="grow"><b>Política de privacidade</b></div></button>
-            <button class="row rowbtn" onclick="toast('parent','contato@missaomesada.com.br')"><div class="dot">✉️</div><div class="grow"><b>Fale conosco</b><div style="font-size:.72rem;color:var(--sub)">contato@missaomesada.com.br</div></div></button>
+            <button class="row rowbtn" onclick="toast('parent','Abriria os Termos e condições')"><div class="dot"><svg class="icon"><use href="#i-doc"/></svg></div><div class="grow"><b>Termos e condições</b></div></button>
+            <button class="row rowbtn" onclick="toast('parent','Abriria a Política de privacidade')"><div class="dot"><svg class="icon"><use href="#i-shield"/></svg></div><div class="grow"><b>Política de privacidade</b></div></button>
+            <button class="row rowbtn" onclick="toast('parent','contato@missaomesada.com.br')"><div class="dot"><svg class="icon"><use href="#i-mail"/></svg></div><div class="grow"><b>Fale conosco</b><div style="font-size:.72rem;color:var(--sub)">contato@missaomesada.com.br</div></div></button>
           </div>
 
           <div class="card stack" style="font-size:.84rem; margin-top:16px">
-            <button class="row rowbtn" onclick="confirmAction('Sair da conta','Você vai precisar entrar de novo para gerenciar a família.','Sair', sairAction)"><div class="dot">↪️</div><div class="grow"><b>Sair</b></div></button>
+            <button class="row rowbtn" onclick="confirmAction('Sair da conta','Você vai precisar entrar de novo para gerenciar a família.','Sair', sairAction)"><div class="dot"><svg class="icon"><use href="#i-logout"/></svg></div><div class="grow"><b>Sair</b></div></button>
             <button class="row rowbtn" onclick="confirmAction('Excluir conta','Remove todas as missões, saldos e histórico da família. Essa ação não pode ser desfeita.','Excluir conta', excluirContaAction)"><div class="dot" style="background:var(--danger-soft); color:var(--danger)"><svg class="icon"><use href="#i-trash"/></svg></div><div class="grow"><b style="color:var(--danger)">Excluir conta</b></div></button>
           </div>
           <div style="text-align:center; font-size:.7rem; color:var(--sub); margin-top:14px">Versão 1.0.0</div>
@@ -1213,7 +1236,7 @@ function abrirFilhoOpcoes(id){
   $('fl-title').textContent = c.name;
   $('fl-body').innerHTML =
     '<button class="btn soft tpl" onclick="closeSheets(); abrirCartaoPara(' + id + ')">🟨🟥 Aplicar cartão</button>' +
-    '<button class="btn soft tpl" onclick="bonusPara(' + id + ')">🎁 Dar bônus surpresa</button>' +
+    '<button class="btn soft tpl" onclick="bonusPara(' + id + ')"><svg class="icon"><use href="#i-gift"/></svg> Dar bônus surpresa</button>' +
     '<button class="btn danger tpl" onclick="closeSheets(); excluirFilho(' + id + ')"><svg class="icon"><use href="#i-trash"/></svg> Excluir filho</button>';
   openSheet('sh-filho');
 }
@@ -1281,7 +1304,7 @@ function flashFromTemplate(id){
 function missionChip(m){
   if (m.st === 'approved') return '<span class="chip ok">✓ ' + '⭐'.repeat(m.nota || 2) + '</span>';
   if (m.st === 'delivered') return '<span class="chip wait">⏳ avaliando</span>';
-  if (m.flash) return '<span class="chip flash">⚡ 2× · 0h58</span>';
+  if (m.flash) return '<span class="chip flash"><svg class="icon"><use href="#i-bolt"/></svg> 2× · 0h58</span>';
   if (m.redo) return '<span class="chip wait"><svg class="icon"><use href="#i-undo"/></svg> refazer</span>';
   return '<span class="chip star num">+' + m.stars + ' ⭐</span>';
 }
@@ -1358,14 +1381,14 @@ function render(){
     '<div class="card row"><div class="dot">' + m.icon + '</div><div class="grow">' +
     '<b style="font-size:.84rem">' + m.name + '</b><div style="font-size:.7rem;color:var(--sub)">Léo · vale ' + m.stars + ' ⭐</div></div>' +
     '<button class="btn ghost" style="padding:8px 10px" aria-label="Devolver tarefa" onclick="openReject(' + m.id + ')"><svg class="icon"><use href="#i-undo"/></svg></button>' +
-    '<button class="btn primary" style="padding:8px 12px" onclick="openApprove(' + m.id + ')">✓ Aprovar</button></div>'
+    '<button class="btn primary" style="padding:8px 12px" onclick="openApprove(' + m.id + ')"><svg class="icon"><use href="#i-check"/></svg> Aprovar</button></div>'
   ).join('') : '<div class="empty">Fila zerada ✨ Sem aprovação pendente — entregas não avaliadas em 24 h são aprovadas com ⭐⭐ automaticamente.</div>';
 
   const resg = state.trocas.filter(r => r.st === 'pending');
   $('p-trocas').innerHTML = resg.length ? resg.map(r =>
     '<div class="card row"><div class="dot">' + r.icon + '</div><div class="grow"><b style="font-size:.84rem">' + r.name +
     '</b><div class="num" style="font-size:.72rem;color:var(--sub)">Léo · custa ' + r.cost + ' ⭐' + (r.pix ? ' · pagar via Pix' : '') + '</div></div>' +
-    '<button class="btn primary" onclick="aprovarTroca(' + r.id + ')">Aprovar 🎟️</button></div>'
+    '<button class="btn primary" onclick="aprovarTroca(' + r.id + ')">Aprovar <svg class="icon"><use href="#i-ticket"/></svg></button></div>'
   ).join('') : '<div class="empty">Nenhuma troca pendente.</div>';
 
   const sugPendentes = state.sugestoes.filter(s => s.st === 'pending');
@@ -1391,7 +1414,7 @@ function render(){
   $('p-all-missions').innerHTML = state.templates.map(t =>
     '<div class="row"><div class="dot">' + t.icon + '</div><div class="grow"><b>' + t.name + '</b>' +
     '<div style="font-size:.72rem;color:var(--sub)">' + t.freq + ' · ' + t.stars + ' ⭐' + (t.foto ? ' · exige foto' : '') + '</div></div>' +
-    '<button class="btn ghost" style="padding:8px 10px" aria-label="Marcar como missão relâmpago hoje" onclick="flashFromTemplate(' + t.id + ')">⚡</button></div>'
+    '<button class="btn ghost" style="padding:8px 10px" aria-label="Marcar como missão relâmpago hoje" onclick="flashFromTemplate(' + t.id + ')"><svg class="icon"><use href="#i-bolt"/></svg></button></div>'
   ).join('');
 
   /* parent financeiro */
