@@ -1,5 +1,8 @@
 <title>Missão Mesada</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap">
 <style>
   /* ---------- chrome (page around the phone) ---------- */
   :root{
@@ -57,21 +60,26 @@
     width:104px; height:22px; border-radius:999px; background:#0d0d12; z-index:60;
   }
 
-  /* two in-app palettes (fixed, like real app screens) */
+  /* two in-app palettes (fixed, like real app screens) — each with its own typeface pairing */
   .screen-wrap[data-app="kid"]{
-    --bg:#FFF8EF; --card:#ffffff; --ink:#262040; --sub:#7a7392;
-    --brand:#6C4DF6; --brand-soft:#EFEAFE; --star:#FFAD1F; --star-soft:#FFF2D6;
-    --flame:#FF6B35; --ok:#2FB86B; --ok-soft:#E2F6EB; --warn:#DE9A1F; --line:#EFE6D8;
-    font-family:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --bg:#FFF7ED; --card:#ffffff; --ink:#251C3E; --sub:#7C7195;
+    --brand:#6D4AFF; --brand-soft:#EEE8FF; --star:#FFAE00; --star-soft:#FFF1CE;
+    --flame:#FF6B35; --ok:#22B579; --ok-soft:#E1F6EC; --warn:#D9930F; --line:#F1E6D4;
+    --font-display:'Baloo 2', ui-rounded, system-ui, sans-serif;
+    --font-body:'Nunito', ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:var(--font-body);
   }
   .screen-wrap[data-app="parent"]{
-    --bg:#F3F6F5; --card:#ffffff; --ink:#182B27; --sub:#5F7370;
-    --brand:#0E6B5C; --brand-soft:#E1EFEC; --star:#DE9A1F; --star-soft:#FBF1DC;
-    --flame:#FF6B35; --ok:#2F965F; --ok-soft:#E2F3E9; --warn:#DE9A1F; --line:#E2E9E7;
-    --danger:#CF4A4A; --danger-soft:#FBE7E7;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --bg:#F4F6F5; --card:#ffffff; --ink:#17251F; --sub:#5C6E68;
+    --brand:#0B6B57; --brand-soft:#DFEEEA; --star:#B57A13; --star-soft:#FBF1DC;
+    --flame:#C1483F; --ok:#2A8F63; --ok-soft:#E1F1E9; --warn:#B57A13; --line:#DFE6E3;
+    --danger:#C1483F; --danger-soft:#F8E7E4;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Work Sans', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:var(--font-body);
   }
   .screen-wrap{background:var(--bg); color:var(--ink)}
+  .font-display{font-family:var(--font-display)}
 
   /* ---------- app layout ---------- */
   .app-head{padding:40px 18px 12px; flex:none}
@@ -113,7 +121,10 @@
 
   /* ---------- shared components ---------- */
   h2.sec{font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--sub); margin:18px 2px 8px}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px;
+    box-shadow:0 1px 2px rgba(20,15,10,.03), 0 4px 14px rgba(20,15,10,.05);
+  }
   .stack{display:flex; flex-direction:column; gap:10px}
   .row{display:flex; align-items:center; gap:10px}
   .rowbtn{width:100%; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; text-align:left; cursor:pointer; -webkit-appearance:none; appearance:none}
@@ -275,7 +286,7 @@
     background:linear-gradient(135deg,#6C4DF6,#8f6ffb); color:#fff;
     border-radius:20px; padding:14px 16px;
   }
-  .kid-hero .big{font-size:1.7rem; font-weight:800; letter-spacing:-.02em}
+  .kid-hero .big{font-family:var(--font-display); font-size:1.9rem; font-weight:700; letter-spacing:-.01em}
   .goalcard{background:linear-gradient(135deg,#FFAD1F,#ff8f3d); color:#4a2c00; border:0}
   .goalcard .bar{background:rgba(255,255,255,.5)}
   .goalcard .bar i{background:#fff}
@@ -331,7 +342,7 @@
         <div class="row">
           <div class="avatar">🦖</div>
           <div class="grow">
-            <div style="font-weight:800; font-size:.95rem">Oi, Léo!</div>
+            <div class="font-display" style="font-weight:700; font-size:1.05rem">Oi, Léo!</div>
             <div style="font-size:.7rem; color:var(--sub)">Nível 7 · Caçador de Missões</div>
           </div>
           <span class="chip star num">⭐ <b id="k-stars">0</b></span>
@@ -389,7 +400,7 @@
         <section class="scr" id="k-eu">
           <div class="card" style="text-align:center">
             <div style="font-size:3rem">🦖</div>
-            <div style="font-weight:800; font-size:1.05rem; margin-top:4px">Léo, o Caçador de Missões</div>
+            <div class="font-display" style="font-weight:700; font-size:1.2rem; margin-top:4px">Léo, o Caçador de Missões</div>
             <div style="font-size:.75rem; color:var(--sub)">Nível 7 · 620 XP — o XP nunca diminui!</div>
             <div class="bar" style="margin-top:10px"><i style="width:62%"></i></div>
             <div style="font-size:.7rem; color:var(--sub); margin-top:6px">Faltam 180 XP para a patente <b>Herói da Casa</b></div>
@@ -428,7 +439,7 @@
       <div class="app-head">
         <div class="row">
           <div class="grow">
-            <div style="font-weight:800; font-size:1.05rem">Bom dia, Carla 👋</div>
+            <div class="font-display" style="font-weight:600; font-size:1.2rem">Bom dia, Carla 👋</div>
             <div style="font-size:.72rem; color:var(--sub)" id="p-sub">Seu resumo leva 60 segundos</div>
           </div>
           <button class="bell" aria-label="Notificações" id="p-bell" onclick="toast('parent','🔔 Léo entregou \'Lição de casa\' — avalie na Fila de aprovações')">🔔<span class="bell-dot" id="p-bell-dot"></span></button>
@@ -456,7 +467,7 @@
         <section class="scr" id="p-financeiro">
           <div class="card" style="background:var(--brand); color:#fff; border:0">
             <div style="font-size:.72rem; opacity:.85; font-weight:700">Saldo do Léo</div>
-            <div class="num" style="font-size:1.6rem; font-weight:800">⭐ <span id="p-total"></span> <span style="font-size:.85rem; font-weight:700; opacity:.85" id="p-total-real"></span></div>
+            <div class="num font-display" style="font-size:1.9rem; font-weight:600">⭐ <span id="p-total"></span> <span style="font-family:var(--font-body); font-size:.85rem; font-weight:700; opacity:.85" id="p-total-real"></span></div>
           </div>
 
           <h2 class="sec">Sugestões da criança</h2>
@@ -1246,7 +1257,7 @@ function goalCardHTML(goal, idx, pct, left){
   return '<div class="card goalcard"><div class="row"><div class="grow">' +
     '<div style="font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em">Minha meta</div>' +
     '<div style="font-weight:800; font-size:1.05rem">' + goal.icon + ' ' + goal.name + '</div></div>' +
-    '<div class="num" style="font-weight:800">' + pct + '%</div></div>' +
+    '<div class="num font-display" style="font-weight:700; font-size:1.3rem">' + pct + '%</div></div>' +
     '<div class="bar" style="margin-top:10px"><i style="width:' + pct + '%"></i></div>' +
     '<div class="num" style="font-size:.72rem; margin-top:6px; font-weight:700">' +
     (left > 0 ? 'Faltam ' + left + ' ⭐ · no seu ritmo, ~' + Math.ceil(left / 12) + ' dias 💪' : 'VOCÊ JÁ PODE TROCAR! 🎉') +
